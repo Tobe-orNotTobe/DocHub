@@ -1,2 +1,0 @@
-# DocHub
-Doctor Hub
