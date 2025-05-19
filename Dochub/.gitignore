@@ -1,0 +1,24 @@
+# Ignore Visual Studio temporary files, build results, and
+# user-specific files
+.vs/
+*.suo
+*.vsdx
+
+# Ignore build output folders
+bin/
+obj/
+Debug/
+Release/
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Package folders
+packages/
+
+# Auto-generated files
+*.log
+*.cache
+*.csproj.user
