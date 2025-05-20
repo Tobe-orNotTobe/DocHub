@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using DochubSystem.Data.DTOs;
+using DochubSystem.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,11 @@ namespace DochubSystem.Common.Helper
     {
         public MappingProfile()
         {
+            // User Mapping
+            CreateMap<User, UserDTO>();
+            CreateMap<CreateUserDTO, User>();
+            CreateMap<UpdateUserDTO, User>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
         }
     }
 }

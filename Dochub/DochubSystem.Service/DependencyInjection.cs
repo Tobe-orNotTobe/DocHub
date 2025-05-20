@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DochubSystem.Common.Helper;
+using DochubSystem.Repository;
+using DochubSystem.Service.Services;
+using DochubSystem.ServiceContract.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DochubSystem.Service
 {
@@ -12,6 +11,15 @@ namespace DochubSystem.Service
     {
         public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // Đăng ký các Repository
+            services.AddRepository(configuration);
+
+            // Đăng ký APIResponse (Transient)
+            services.AddScoped<APIResponse>();
+
+            // Đăng ký UserService (Transient)
+            services.AddTransient<IUserService, UserService>();
+
             return services;
         }
     }

@@ -13,6 +13,7 @@ namespace DochubSystem.Repository.Repositories
     {
         private readonly DochubDbContext _context;
 
+        public IUserRepository Users { get; }
 
         public UnitOfWork(DochubDbContext context)
         {

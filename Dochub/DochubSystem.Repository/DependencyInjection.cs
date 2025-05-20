@@ -1,4 +1,5 @@
 ﻿using DochubSystem.Repository.Repositories;
+using DochubSystem.Repository.Repositories.DochubSystem.Repository.Repositories;
 using DochubSystem.RepositoryContract.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ namespace DochubSystem.Repository
 
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
+            services.AddTransient<IUserRepository, UserRepository>();
 
             //DI Unit of Work
             services.AddTransient<IUnitOfWork, UnitOfWork>();

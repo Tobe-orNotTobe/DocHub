@@ -21,10 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\DochubSystem.Common\DochubSystem.Common.csproj" />
     <ProjectReference Include="..\DochubSystem.Data\DochubSystem.Data.csproj" />
     <ProjectReference Include="..\DochubSystem.Repository\DochubSystem.Repository.csproj" />
