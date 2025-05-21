@@ -9,7 +9,8 @@ namespace DochubSystem.Data.Models
     {
         public DochubDbContext(DbContextOptions<DochubDbContext> options) : base(options) { }
 
-        public DbSet<Session> Sessions { get; set; }
+		public DbSet<User> Users { get; set; }
+		public DbSet<Session> Sessions { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Notification> Notifications { get; set; }

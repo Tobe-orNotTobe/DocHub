@@ -15,9 +15,11 @@ namespace DochubSystem.Repository.Repositories
 
         public IUserRepository Users { get; }
 
-        public UnitOfWork(DochubDbContext context)
+        public UnitOfWork(DochubDbContext context, IUserRepository userRepository)
         {
             _context = context;
+
+            Users = userRepository;
         }
 
 

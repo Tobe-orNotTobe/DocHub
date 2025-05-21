@@ -23,7 +23,6 @@
   <ItemGroup>
     <ProjectReference Include="..\DochubSystem.Common\DochubSystem.Common.csproj" />
     <ProjectReference Include="..\DochubSystem.Data\DochubSystem.Data.csproj" />
-    <ProjectReference Include="..\DochubSystem.Repository\DochubSystem.Repository.csproj" />
     <ProjectReference Include="..\DochubSystem.Service\DochubSystem.Service.csproj" />
   </ItemGroup>
 
