@@ -10,7 +10,11 @@ namespace DochubSystem.RepositoryContract.Interfaces
     public interface IUnitOfWork : IDisposable
     {
         IUserRepository Users { get; }
-        Task<int> CompleteAsync();
+		IDoctorRepository Doctors { get; }
+		IAppointmentRepository Appointments { get; }
+        IAppointmentTransactionRepository AppointmentTransactions { get; }
+
+		Task<int> CompleteAsync();
 
         Task<IDbContextTransaction> BeginTransactionAsync();
 

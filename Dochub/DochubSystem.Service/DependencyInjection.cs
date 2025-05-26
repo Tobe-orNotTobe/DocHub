@@ -2,6 +2,7 @@
 using DochubSystem.Repository;
 using DochubSystem.Service.Services;
 using DochubSystem.ServiceContract.Interfaces;
+using MailKit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +20,13 @@ namespace DochubSystem.Service
 
             // Đăng ký UserService (Transient)
             services.AddTransient<IUserService, UserService>();
+			services.AddTransient<IAuthService, AuthService>();
+			services.AddTransient<IAdminService, AdminService>();
+			services.AddTransient<IEmailService, EmailService>();
+			services.AddTransient<IDoctorService, DoctorService>();
+			services.AddTransient<IAppointmentService, AppointmentService>();
 
-            return services;
+			return services;
         }
     }
 }

@@ -25,8 +25,6 @@ namespace DochubSystem.Repository.Repositories
 		public async Task<User> GetUserByIdAsync(string userId)
 		{
 			return await _userManager.Users
-									 .Include(u => u.Appointments)
-									 .Include(u => u.Notifications)
 									 .FirstOrDefaultAsync(u => u.Id == userId);
 		}
 

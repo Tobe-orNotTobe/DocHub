@@ -14,9 +14,12 @@ namespace DochubSystem.Repository
             services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddTransient<IUserRepository, UserRepository>();
+			services.AddTransient<IDoctorRepository, DoctorRepository>();
+			services.AddTransient<IAppointmentRepository, AppointmentRepository>();
+			services.AddTransient<IAppointmentTransactionRepository, AppointmentTransactionRepository>();
 
-            //DI Unit of Work
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+			//DI Unit of Work
+			services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             return services;
         }

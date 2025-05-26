@@ -14,16 +14,25 @@ namespace DochubSystem.Repository.Repositories
         private readonly DochubDbContext _context;
 
         public IUserRepository Users { get; }
+		public IDoctorRepository Doctors { get; }
+		public IAppointmentRepository Appointments { get; }
+		public IAppointmentTransactionRepository AppointmentTransactions { get; }
 
-        public UnitOfWork(DochubDbContext context, IUserRepository userRepository)
-        {
-            _context = context;
+		public UnitOfWork(DochubDbContext context,
+					   IUserRepository userRepository,
+						IDoctorRepository doctorRepository,
+					   IAppointmentRepository appointmentRepository,
+					   IAppointmentTransactionRepository appointmentTransactionRepository)
+		{
+			_context = context;
+			Users = userRepository;
+			Doctors = doctorRepository;
+			Appointments = appointmentRepository;
+			AppointmentTransactions = appointmentTransactionRepository;
+		}
 
-            Users = userRepository;
-        }
 
-
-        public async Task<int> CompleteAsync()
+		public async Task<int> CompleteAsync()
         {
             return await _context.SaveChangesAsync();
         }
