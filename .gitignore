@@ -1,0 +1,6 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Dochub/DochubSystem.API/appsettings.json
+/Dochub/DochubSystem.API/Program.cs

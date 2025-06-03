@@ -93,6 +93,17 @@ builder.Services
 		options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 	});
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // địa chỉ FE
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials(); // nếu bạn dùng cookies hoặc authorization header
+    });
+});
+
 var app = builder.Build();
 
 // Create default roles and admin user
@@ -146,6 +157,8 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
