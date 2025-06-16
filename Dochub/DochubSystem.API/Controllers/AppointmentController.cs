@@ -2,13 +2,16 @@
 using DochubSystem.Common.Helper;
 using DochubSystem.Data.DTOs;
 using DochubSystem.ServiceContract.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace DochubSystem.API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize(AuthenticationSchemes = "Bearer")]
 	public class AppointmentController : ControllerBase
 	{
 		private readonly APIResponse _response;
@@ -31,7 +34,8 @@ namespace DochubSystem.API.Controllers
 				if (!ModelState.IsValid)
 					return BadRequest(ModelState);
 
-				var result = await _appointmentService.CreateAppointmentAsync(createAppointmentDTO);
+				var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+				var result = await _appointmentService.CreateAppointmentAsync(currentUserId, createAppointmentDTO);
 
 				_response.Result = result;
 				_response.StatusCode = HttpStatusCode.Created;

@@ -14,9 +14,6 @@ namespace DochubSystem.Data.Entities
         [ForeignKey("Doctor")]
         public int DoctorId { get; set; }
 
-		[Column(TypeName = "decimal(18,2)")]
-		public decimal Price { get; set; }
-
 		public DateTime AppointmentDate { get; set; }
         public string Status { get; set; } // 'pending', 'completed', 'cancelled'
         public DateTime CreatedAt { get; set; }
@@ -24,6 +21,7 @@ namespace DochubSystem.Data.Entities
 
 		public string? CancellationReason { get; set; }
 		public DateTime? CancelledAt { get; set; }
+		public string? Symptoms { get; set; }
 
 		public User User { get; set; }
         public Doctor Doctor { get; set; }

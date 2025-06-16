@@ -10,11 +10,13 @@ namespace DochubSystem.Service.Services
 	{
 		private readonly UserManager<User> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly IEmailService _emailService;
 
-		public AdminService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+		public AdminService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IEmailService emailService)
 		{
 			_userManager = userManager;
 			_roleManager = roleManager;
+			_emailService = emailService;
 		}
 
 		public async Task<(bool Success, string Message, string UserId, List<string> Errors)> CreateAccountAsync(RegisterAccountDTO model)
@@ -44,28 +46,29 @@ namespace DochubSystem.Service.Services
 					Address = model.Address,
 					DateOfBirth = model.DateOfBirth,
 					IsActive = true,
-					CertificateImageUrl = model.CertificateImageUrl
+					CertificateImageUrl = model.CertificateImageUrl,
+					EmailConfirmed = true
 				};
 
-				var result = await _userManager.CreateAsync(user, model.Password);
+				string password = GeneratePassword(10);
+
+				var result = await _userManager.CreateAsync(user, password);
 
 				if (!result.Succeeded)
 				{
 					return (false, null, null, result.Errors.Select(e => e.Description).ToList());
 				}
 
-				// Assign role if specified
-				if (!string.IsNullOrWhiteSpace(model.Role))
+				await _userManager.AddToRoleAsync(user, "Doctor");
+
+				try
 				{
-					if (await _roleManager.RoleExistsAsync(model.Role))
-					{
-						await _userManager.AddToRoleAsync(user, model.Role);
+					_emailService.SendWelcomeEmail(model.Email, model.FullName, model.UserName, password);
 					}
-					else
+				catch (Exception emailEx)
 					{
-						// Rollback user creation if role doesn't exist
-						await _userManager.DeleteAsync(user);
-						return (false, null, null, new List<string> { $"Vai trò '{model.Role}' không tồn tại." });
+					
+					Console.WriteLine($"Failed to send welcome email: {emailEx.Message}");
 					}
 				}
 
@@ -77,5 +80,26 @@ namespace DochubSystem.Service.Services
 			}
 		}
 
+		private static string GeneratePassword(int length)
+		{
+			const string lower = "abcdefghijklmnopqrstuvwxyz";
+			const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			const string digits = "0123456789";
+			const string special = "!@#$%^&*";
+			string all = lower + upper + digits + special;
+
+			var rand = new Random();
+			var password = new char[length];
+
+			password[0] = lower[rand.Next(lower.Length)];
+			password[1] = upper[rand.Next(upper.Length)];
+			password[2] = digits[rand.Next(digits.Length)];
+			password[3] = special[rand.Next(special.Length)];
+
+			for (int i = 4; i < length; i++)
+				password[i] = all[rand.Next(all.Length)];
+
+			return new string(password.OrderBy(_ => rand.Next()).ToArray());
+		}
 	}
 }

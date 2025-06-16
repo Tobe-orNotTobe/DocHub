@@ -4,7 +4,7 @@ namespace DochubSystem.ServiceContract.Interfaces
 {
 	public interface IAppointmentService
 	{
-		Task<AppointmentDTO> CreateAppointmentAsync(CreateAppointmentDTO createAppointmentDTO);
+		Task<AppointmentDTO> CreateAppointmentAsync(string userId, CreateAppointmentDTO createAppointmentDTO);
 		Task<AppointmentDTO> GetAppointmentByIdAsync(int appointmentId);
 	}
 }

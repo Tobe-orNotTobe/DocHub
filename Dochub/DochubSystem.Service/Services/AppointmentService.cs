@@ -17,10 +17,10 @@ namespace DochubSystem.Service.Services
 			_mapper = mapper;
 		}
 
-		public async Task<AppointmentDTO> CreateAppointmentAsync(CreateAppointmentDTO createAppointmentDTO)
+		public async Task<AppointmentDTO> CreateAppointmentAsync(string userId, CreateAppointmentDTO createAppointmentDTO)
 		{
 			// Validate user exists
-			var userExists = await _unitOfWork.Users.UserExistsAsync(createAppointmentDTO.UserId);
+			var userExists = await _unitOfWork.Users.UserExistsAsync(userId);
 			if (!userExists)
 				throw new ArgumentException("User not found");
 
@@ -35,11 +35,12 @@ namespace DochubSystem.Service.Services
 
 			var appointment = new Appointment
 			{
-				UserId = createAppointmentDTO.UserId,
+				UserId = userId,
 				DoctorId = createAppointmentDTO.DoctorId,
 				AppointmentDate = createAppointmentDTO.AppointmentDate,
 				Price = createAppointmentDTO.Price,
 				Status = "pending",
+				Symptoms = createAppointmentDTO.Symptoms,
 				CreatedAt = DateTime.UtcNow,
 				UpdatedAt = DateTime.UtcNow
 			};

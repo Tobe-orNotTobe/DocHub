@@ -67,8 +67,6 @@ namespace DochubSystem.Data.DTOs
 		public string PhoneNumber { get; set; }
 		public string Address { get; set; }
 		public DateTime DateOfBirth { get; set; }
-		public string Password { get; set; }
-		public string Role { get; set; }
 		public string? CertificateImageUrl { get; set; }
 	}
 

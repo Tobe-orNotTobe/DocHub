@@ -11,8 +11,8 @@ namespace DochubSystem.Data.DTOs
 		public int DoctorId { get; set; }
 		public string DoctorName { get; set; }
 		public DateTime AppointmentDate { get; set; }
-		public decimal Price { get; set; }
 		public string Status { get; set; }
+		public string? Symptoms { get; set; }
 		public DateTime CreatedAt { get; set; }
 		public DateTime UpdatedAt { get; set; }
 		public string? CancellationReason { get; set; }
@@ -22,17 +22,13 @@ namespace DochubSystem.Data.DTOs
 	public class CreateAppointmentDTO
 	{
 		[Required]
-		public string UserId { get; set; }
-
-		[Required]
 		public int DoctorId { get; set; }
 
 		[Required]
 		public DateTime AppointmentDate { get; set; }
 
-		[Required]
-		[Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-		public decimal Price { get; set; }
+		[StringLength(1000, ErrorMessage = "Symptoms cannot exceed 1000 characters")]
+		public string? Symptoms { get; set; }
 
 	}
 	public class AppointmentSummaryDTO
@@ -42,16 +38,18 @@ namespace DochubSystem.Data.DTOs
 		public string DoctorName { get; set; }
 		public string DoctorSpecialization { get; set; }
 		public DateTime AppointmentDate { get; set; }
-		public decimal Price { get; set; }
 		public string Status { get; set; }
+		public string? Symptoms { get; set; }
+
 	}
 
 	public class UpdateAppointmentDTO
 	{
 		public DateTime? AppointmentDate { get; set; }
-		public decimal? Price { get; set; }
 		public string? Status { get; set; }
 		public string? CancellationReason { get; set; }
+		[StringLength(1000, ErrorMessage = "Symptoms cannot exceed 1000 characters")]
+		public string? Symptoms { get; set; }
 	}
 
 	public class CancelAppointmentDTO

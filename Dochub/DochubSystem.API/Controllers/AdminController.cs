@@ -51,7 +51,9 @@ namespace DochubSystem.API.Controllers
 
 			_response.StatusCode = HttpStatusCode.OK;
 			_response.IsSuccess = true;
-			_response.Result = new { Message = result.Message, UserId = result.UserId };
+			_response.Result = new { Message = result.Message, UserId = result.UserId,
+				EmailSent = "Email chào mừng với thông tin đăng nhập đã được gửi tới địa chỉ email của người dùng."
+			};
 			return Ok(_response);
 		}
 
