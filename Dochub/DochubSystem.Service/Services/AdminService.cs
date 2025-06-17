@@ -70,7 +70,6 @@ namespace DochubSystem.Service.Services
 					
 					Console.WriteLine($"Failed to send welcome email: {emailEx.Message}");
 					}
-				}
 
 				return (true, "Tài khoản đã được tạo thành công.", user.Id, null);
 			}
