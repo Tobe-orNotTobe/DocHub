@@ -17,6 +17,9 @@ namespace DochubSystem.Repository.Repositories
 		public IDoctorRepository Doctors { get; }
 		public IAppointmentRepository Appointments { get; }
 		public IAppointmentTransactionRepository AppointmentTransactions { get; }
+		public ISubscriptionPlanRepository SubscriptionPlans { get; }
+		public IUserSubscriptionRepository UserSubscriptions { get; }
+		public IConsultationUsageRepository ConsultationUsages { get; }
 
 		public UnitOfWork(DochubDbContext context,
 					   IUserRepository userRepository,

@@ -13,6 +13,9 @@ namespace DochubSystem.RepositoryContract.Interfaces
 		IDoctorRepository Doctors { get; }
 		IAppointmentRepository Appointments { get; }
         IAppointmentTransactionRepository AppointmentTransactions { get; }
+		ISubscriptionPlanRepository SubscriptionPlans { get; }
+		IUserSubscriptionRepository UserSubscriptions { get; }
+		IConsultationUsageRepository ConsultationUsages { get; }
 
 		Task<int> CompleteAsync();
 
