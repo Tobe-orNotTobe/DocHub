@@ -12,10 +12,12 @@ namespace DochubSystem.RepositoryContract.Interfaces
         IUserRepository Users { get; }
 		IDoctorRepository Doctors { get; }
 		IAppointmentRepository Appointments { get; }
-        IAppointmentTransactionRepository AppointmentTransactions { get; }
+		IWalletRepository Wallets { get; }
+		IWalletTransactionRepository WalletTransactions { get; }
 		ISubscriptionPlanRepository SubscriptionPlans { get; }
 		IUserSubscriptionRepository UserSubscriptions { get; }
 		IConsultationUsageRepository ConsultationUsages { get; }
+		IPaymentTransactionRepository PaymentTransactions { get; }
 
 		Task<int> CompleteAsync();
 

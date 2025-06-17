@@ -16,10 +16,12 @@ namespace DochubSystem.Repository.Repositories
         public IUserRepository Users { get; }
 		public IDoctorRepository Doctors { get; }
 		public IAppointmentRepository Appointments { get; }
-		public IAppointmentTransactionRepository AppointmentTransactions { get; }
+		public IWalletRepository Wallets { get; }
+		public IWalletTransactionRepository WalletTransactions { get; }
 		public ISubscriptionPlanRepository SubscriptionPlans { get; }
 		public IUserSubscriptionRepository UserSubscriptions { get; }
 		public IConsultationUsageRepository ConsultationUsages { get; }
+		public IPaymentTransactionRepository PaymentTransactions { get; }
 
 		public UnitOfWork(DochubDbContext context,
 					   IUserRepository userRepository,

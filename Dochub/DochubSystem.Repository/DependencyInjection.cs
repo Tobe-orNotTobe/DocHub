@@ -16,10 +16,12 @@ namespace DochubSystem.Repository
             services.AddTransient<IUserRepository, UserRepository>();
 			services.AddTransient<IDoctorRepository, DoctorRepository>();
 			services.AddTransient<IAppointmentRepository, AppointmentRepository>();
-			services.AddTransient<IAppointmentTransactionRepository, AppointmentTransactionRepository>();
+			services.AddTransient<IWalletRepository, WalletRepository>();
+			services.AddTransient<IWalletTransactionRepository, WalletTransactionRepository>();
 			services.AddTransient<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
 			services.AddTransient<IUserSubscriptionRepository, UserSubscriptionRepository>();
 			services.AddTransient<IConsultationUsageRepository, ConsultationUsageRepository>();
+			services.AddTransient<IPaymentTransactionRepository, PaymentTransactionRepository>();
 
 			//DI Unit of Work
 			services.AddTransient<IUnitOfWork, UnitOfWork>();
