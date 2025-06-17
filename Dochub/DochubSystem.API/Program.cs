@@ -104,6 +104,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 // Create default roles and admin user
