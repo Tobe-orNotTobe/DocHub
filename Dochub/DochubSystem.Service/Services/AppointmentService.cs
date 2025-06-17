@@ -38,7 +38,6 @@ namespace DochubSystem.Service.Services
 				UserId = userId,
 				DoctorId = createAppointmentDTO.DoctorId,
 				AppointmentDate = createAppointmentDTO.AppointmentDate,
-				Price = createAppointmentDTO.Price,
 				Status = "pending",
 				Symptoms = createAppointmentDTO.Symptoms,
 				CreatedAt = DateTime.UtcNow,
