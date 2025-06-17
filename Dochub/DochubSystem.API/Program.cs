@@ -2,6 +2,7 @@
 using DochubSystem.Data.Entities;
 using DochubSystem.Data.Models;
 using DochubSystem.Service;
+using DochubSystem.Service.BackgroundServices;
 using DochubSystem.ServiceContract.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -86,6 +87,9 @@ builder.Services.AddIdentity<User, IdentityRole>()
 
 builder.Services.AddServices(builder.Configuration);
 
+// Register startup initialization service
+builder.Services.AddHostedService<StartupInitializationService>();
+
 builder.Services
 	.AddControllers()
 	.AddJsonOptions(options =>
@@ -113,36 +117,74 @@ using (var scope = app.Services.CreateScope())
 {
 	var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 	var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+	var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
-	// Define default roles
-	var roles = new[] { "Admin", "Customer", "Doctor" };
-	foreach (var role in roles)
+	try
 	{
-		if (!await roleManager.RoleExistsAsync(role))
+		// Define default roles
+		var roles = new[] { "Admin", "Customer", "Doctor" };
+		foreach (var role in roles)
 		{
-			await roleManager.CreateAsync(new IdentityRole(role));
+			if (!await roleManager.RoleExistsAsync(role))
+			{
+				await roleManager.CreateAsync(new IdentityRole(role));
+				logger.LogInformation($"Created role: {role}");
+			}
+		}
+
+		// Create default admin user
+		var adminEmail = "admin@gmail.com";
+		var adminUser = await userManager.FindByEmailAsync(adminEmail);
+		if (adminUser == null)
+		{
+			var newUser = new User
+			{
+				UserName = "admin",
+				Email = adminEmail,
+				EmailConfirmed = true,
+				FullName = "System Administrator",
+				IsActive = true
+			};
+
+			var result = await userManager.CreateAsync(newUser, "Admin12345@");
+			if (result.Succeeded)
+			{
+				await userManager.AddToRoleAsync(newUser, "Admin");
+				logger.LogInformation("Default admin user created successfully");
+			}
+			else
+			{
+				logger.LogError("Failed to create admin user: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
+			}
+		}
+
+		// Send welcome notification to admin (example)
+		try
+		{
+			var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+			var admin = await userManager.FindByEmailAsync(adminEmail);
+			if (admin != null)
+			{
+				await notificationService.SendNotificationAsync(new DochubSystem.Data.DTOs.SendNotificationRequestDTO
+				{
+					UserId = admin.Id,
+					NotificationType = "WELCOME_MESSAGE",
+					Parameters = new Dictionary<string, object>
+					{
+						["UserName"] = admin.FullName ?? admin.UserName
+					}
+				});
+				logger.LogInformation("Welcome notification sent to admin");
+			}
+		}
+		catch (Exception ex)
+		{
+			logger.LogWarning(ex, "Failed to send welcome notification to admin");
 		}
 	}
-
-	// Create default admin user
-	var adminEmail = "admin@gmail.com";
-	var adminUser = await userManager.FindByEmailAsync(adminEmail);
-	if (adminUser == null)
+	catch (Exception ex)
 	{
-		var newUser = new User
-		{
-			UserName = "admin",
-			Email = adminEmail,
-			EmailConfirmed = true
-		};
-
-		var result = await userManager.CreateAsync(newUser, "Admin12345@");
-		if (result.Succeeded)
-		{
-			adminUser = await userManager.FindByEmailAsync(adminEmail);
-
-			await userManager.AddToRoleAsync(newUser, "Admin");
-		}
+		logger.LogError(ex, "Error during application startup initialization");
 	}
 }
 
@@ -150,7 +192,11 @@ if (app.Environment.IsDevelopment())
 {
 	app.UseDeveloperExceptionPage();
 	app.UseSwagger();
-	app.UseSwaggerUI();
+	app.UseSwaggerUI(c =>
+	{
+		c.SwaggerEndpoint("/swagger/v1/swagger.json", "Dochub API V1");
+		c.RoutePrefix = "swagger";
+	});
 }
 else
 {
@@ -166,5 +212,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Log startup completion
+var startupLogger = app.Services.GetRequiredService<ILogger<Program>>();
+startupLogger.LogInformation("Dochub API started successfully with Notification System enabled");
+startupLogger.LogInformation("Available endpoints:");
+startupLogger.LogInformation("- Swagger UI: https://localhost:7057/swagger");
+startupLogger.LogInformation("- Notifications API: /api/notification");
+startupLogger.LogInformation("- Notification Templates API: /api/notificationtemplate (Admin only)");
+startupLogger.LogInformation("- Notification Management API: /api/notificationmanagement (Admin only)");
 
 app.Run();

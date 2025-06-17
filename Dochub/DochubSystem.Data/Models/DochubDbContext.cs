@@ -22,6 +22,9 @@ namespace DochubSystem.Data.Models
 		public DbSet<UserSubscription> UserSubscriptions { get; set; }
 		public DbSet<ConsultationUsage> ConsultationUsages { get; set; }
 		public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
+		public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
+		public DbSet<NotificationQueue> NotificationQueues { get; set; }
+		public DbSet<NotificationHistory> NotificationHistories { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -64,6 +67,94 @@ namespace DochubSystem.Data.Models
 				.WithMany(u => u.Notifications)
 				.HasForeignKey(n => n.UserId)
 				.OnDelete(DeleteBehavior.Restrict);
+
+			// NotificationTemplate relationships
+			modelBuilder.Entity<NotificationTemplate>()
+				.HasIndex(nt => nt.Type)
+				.HasDatabaseName("IX_NotificationTemplate_Type");
+
+			modelBuilder.Entity<NotificationTemplate>()
+				.HasIndex(nt => nt.TargetRole)
+				.HasDatabaseName("IX_NotificationTemplate_TargetRole");
+
+			// NotificationQueue relationships
+			modelBuilder.Entity<NotificationQueue>()
+				.HasOne(nq => nq.NotificationTemplate)
+				.WithMany(nt => nt.NotificationQueues)
+				.HasForeignKey(nq => nq.TemplateId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<NotificationQueue>()
+				.HasOne(nq => nq.User)
+				.WithMany()
+				.HasForeignKey(nq => nq.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<NotificationQueue>()
+				.HasIndex(nq => nq.Status)
+				.HasDatabaseName("IX_NotificationQueue_Status");
+
+			modelBuilder.Entity<NotificationQueue>()
+				.HasIndex(nq => nq.ScheduledAt)
+				.HasDatabaseName("IX_NotificationQueue_ScheduledAt");
+
+			modelBuilder.Entity<NotificationQueue>()
+				.HasIndex(nq => new { nq.Status, nq.ScheduledAt })
+				.HasDatabaseName("IX_NotificationQueue_Status_ScheduledAt");
+
+			// Notification relationships (updated)
+			modelBuilder.Entity<Notification>()
+				.HasOne(n => n.Appointment)
+				.WithMany()
+				.HasForeignKey(n => n.AppointmentId)
+				.OnDelete(DeleteBehavior.SetNull);
+
+			modelBuilder.Entity<Notification>()
+				.HasOne(n => n.Doctor)
+				.WithMany()
+				.HasForeignKey(n => n.DoctorId)
+				.OnDelete(DeleteBehavior.SetNull);
+
+			modelBuilder.Entity<Notification>()
+				.HasIndex(n => n.Status)
+				.HasDatabaseName("IX_Notification_Status");
+
+			modelBuilder.Entity<Notification>()
+				.HasIndex(n => n.Type)
+				.HasDatabaseName("IX_Notification_Type");
+
+			modelBuilder.Entity<Notification>()
+				.HasIndex(n => new { n.UserId, n.Status })
+				.HasDatabaseName("IX_Notification_User_Status");
+
+			modelBuilder.Entity<Notification>()
+				.HasIndex(n => new { n.UserId, n.CreatedAt })
+				.HasDatabaseName("IX_Notification_User_CreatedAt");
+
+			// NotificationHistory relationships
+			modelBuilder.Entity<NotificationHistory>()
+				.HasOne(nh => nh.User)
+				.WithMany()
+				.HasForeignKey(nh => nh.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<NotificationHistory>()
+				.HasOne(nh => nh.NotificationTemplate)
+				.WithMany()
+				.HasForeignKey(nh => nh.TemplateId)
+				.OnDelete(DeleteBehavior.SetNull);
+
+			modelBuilder.Entity<NotificationHistory>()
+				.HasIndex(nh => nh.SentAt)
+				.HasDatabaseName("IX_NotificationHistory_SentAt");
+
+			modelBuilder.Entity<NotificationHistory>()
+				.HasIndex(nh => nh.NotificationType)
+				.HasDatabaseName("IX_NotificationHistory_Type");
+
+			modelBuilder.Entity<NotificationHistory>()
+				.HasIndex(nh => new { nh.UserId, nh.SentAt })
+				.HasDatabaseName("IX_NotificationHistory_User_SentAt");
 
 			modelBuilder.Entity<MedicalRecord>()
 				.HasOne(mr => mr.Appointment)

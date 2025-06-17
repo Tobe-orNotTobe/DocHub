@@ -1,5 +1,6 @@
 ﻿using DochubSystem.Common.Helper;
 using DochubSystem.Repository;
+using DochubSystem.Service.BackgroundServices;
 using DochubSystem.Service.Services;
 using DochubSystem.ServiceContract.Interfaces;
 using MailKit;
@@ -27,6 +28,12 @@ namespace DochubSystem.Service
 			services.AddTransient<IAppointmentService, AppointmentService>();
 			services.AddTransient<IPaymentService, PaymentService>();
 			services.AddTransient<ISubscriptionService, SubscriptionService>();
+			services.AddScoped<INotificationService, NotificationService>();
+			services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
+			services.AddHostedService<StartupInitializationService>();
+			services.AddHostedService<NotificationBackgroundService>();
+			services.AddHostedService<HighPriorityNotificationService>();
+			services.AddHostedService<AppointmentReminderService>();
 
 			return services;
         }

@@ -18,6 +18,10 @@ namespace DochubSystem.RepositoryContract.Interfaces
 		IUserSubscriptionRepository UserSubscriptions { get; }
 		IConsultationUsageRepository ConsultationUsages { get; }
 		IPaymentTransactionRepository PaymentTransactions { get; }
+		INotificationRepository Notifications { get; }
+		INotificationTemplateRepository NotificationTemplates { get; }
+		INotificationQueueRepository NotificationQueues { get; }
+		INotificationHistoryRepository NotificationHistories { get; }
 
 		Task<int> CompleteAsync();
 
