@@ -29,17 +29,14 @@ namespace DochubSystem.Service.Services
 			if (existingDoctor != null)
 				throw new InvalidOperationException("User is already registered as a doctor");
 
-			// Check if license number is unique
-			var licenseExists = await _unitOfWork.Doctors.AnyAsync(d => d.LicenseNumber == createDoctorDTO.LicenseNumber);
-			if (licenseExists)
-				throw new InvalidOperationException("License number already exists");
-
 			var doctor = new Doctor
 			{
 				UserId = createDoctorDTO.UserId,
-				Specialization = createDoctorDTO.Specialization,
-				Experience = createDoctorDTO.Experience,
-				LicenseNumber = createDoctorDTO.LicenseNumber,
+				Specialization = createDoctorDTO.Specialization ?? "Need Update",
+				YearsOfExperience = createDoctorDTO.YearsOfExperience,
+				Bio = createDoctorDTO.Bio ?? "Need Update",
+				HospitalName = createDoctorDTO.HospitalName ?? "Need Update",
+				Rating = null, 
 				IsActive = createDoctorDTO.IsActive
 			};
 
@@ -97,25 +94,18 @@ namespace DochubSystem.Service.Services
 			if (doctor == null)
 				throw new ArgumentException("Doctor not found");
 
-			// Check license number uniqueness if it's being updated
-			if (!string.IsNullOrEmpty(updateDoctorDTO.LicenseNumber) &&
-				updateDoctorDTO.LicenseNumber != doctor.LicenseNumber)
-			{
-				var licenseExists = await _unitOfWork.Doctors.AnyAsync(
-					d => d.LicenseNumber == updateDoctorDTO.LicenseNumber && d.DoctorId != doctorId);
-				if (licenseExists)
-					throw new InvalidOperationException("License number already exists");
-			}
-
 			// Update properties
 			if (!string.IsNullOrEmpty(updateDoctorDTO.Specialization))
 				doctor.Specialization = updateDoctorDTO.Specialization;
 
-			if (updateDoctorDTO.Experience.HasValue)
-				doctor.Experience = updateDoctorDTO.Experience.Value;
+			if (updateDoctorDTO.YearsOfExperience.HasValue)
+				doctor.YearsOfExperience = updateDoctorDTO.YearsOfExperience.Value;
 
-			if (!string.IsNullOrEmpty(updateDoctorDTO.LicenseNumber))
-				doctor.LicenseNumber = updateDoctorDTO.LicenseNumber;
+			if (!string.IsNullOrEmpty(updateDoctorDTO.Bio))
+				doctor.Bio = updateDoctorDTO.Bio;
+
+			if (!string.IsNullOrEmpty(updateDoctorDTO.HospitalName))
+				doctor.HospitalName = updateDoctorDTO.HospitalName;
 
 			if (updateDoctorDTO.IsActive.HasValue)
 				doctor.IsActive = updateDoctorDTO.IsActive.Value;
@@ -176,17 +166,6 @@ namespace DochubSystem.Service.Services
 		public async Task<bool> DoctorExistsAsync(int doctorId)
 		{
 			return await _unitOfWork.Doctors.AnyAsync(d => d.DoctorId == doctorId);
-		}
-
-		public async Task<bool> IsLicenseNumberUniqueAsync(string licenseNumber, int? excludeDoctorId = null)
-		{
-			if (excludeDoctorId.HasValue)
-			{
-				return !await _unitOfWork.Doctors.AnyAsync(
-					d => d.LicenseNumber == licenseNumber && d.DoctorId != excludeDoctorId.Value);
-			}
-
-			return !await _unitOfWork.Doctors.AnyAsync(d => d.LicenseNumber == licenseNumber);
 		}
 	}
 }

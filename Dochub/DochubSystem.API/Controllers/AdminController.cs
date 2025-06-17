@@ -14,11 +14,13 @@ namespace DochubSystem.API.Controllers
 	public class AdminController : ControllerBase
 	{
 		private readonly IAdminService _adminService;
+		private readonly IDoctorService _doctorService; 
 		private readonly APIResponse _response;
 
-		public AdminController(IAdminService adminService, APIResponse response)
+		public AdminController(IAdminService adminService, IDoctorService doctorService, APIResponse response)
 		{
 			_adminService = adminService;
+			_doctorService = doctorService;
 			_response = response;
 		}
 
@@ -49,12 +51,34 @@ namespace DochubSystem.API.Controllers
 				return BadRequest(_response);
 			}
 
-			_response.StatusCode = HttpStatusCode.OK;
-			_response.IsSuccess = true;
-			_response.Result = new { Message = result.Message, UserId = result.UserId,
-				EmailSent = "Email chào mừng với thông tin đăng nhập đã được gửi tới địa chỉ email của người dùng."
-			};
-			return Ok(_response);
+			try
+			{
+				var createDoctorDTO = new CreateDoctorDTO
+				{
+					UserId = result.UserId,
+					IsActive = true
+				};
+
+				var doctorResult = await _doctorService.CreateDoctorAsync(createDoctorDTO);
+
+				_response.StatusCode = HttpStatusCode.OK;
+				_response.IsSuccess = true;
+				_response.Result = new
+				{
+					Message = result.Message,
+					UserId = result.UserId,
+					DoctorId = doctorResult.DoctorId, 
+					EmailSent = "Email chào mừng với thông tin đăng nhập đã được gửi tới địa chỉ email của người dùng."
+				};
+				return Ok(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages = new List<string> { $"Tạo tài khoản thành công nhưng tạo thông tin bác sĩ thất bại: {ex.Message}" };
+				return BadRequest(_response);
+			}
 		}
 
 		/// <summary>

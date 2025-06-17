@@ -293,31 +293,5 @@ namespace DochubSystem.API.Controllers
 				return StatusCode(500, _response);
 			}
 		}
-
-		/// <summary>
-		/// Kiểm tra số giấy phép hành nghề có duy nhất hay không
-		/// </summary>
-		[HttpGet("license/{licenseNumber}/unique")]
-		public async Task<IActionResult> CheckLicenseNumberUnique(string licenseNumber, [FromQuery] int? excludeDoctorId = null)
-		{
-			try
-			{
-				if (string.IsNullOrWhiteSpace(licenseNumber))
-					return BadRequest("Số giấy phép không được để trống.");
-
-				var isUnique = await _doctorService.IsLicenseNumberUniqueAsync(licenseNumber, excludeDoctorId);
-				_response.Result = new { IsUnique = isUnique, LicenseNumber = licenseNumber };
-				_response.StatusCode = HttpStatusCode.OK;
-				_response.IsSuccess = true;
-				return Ok(_response);
-			}
-			catch (Exception ex)
-			{
-				_response.StatusCode = HttpStatusCode.InternalServerError;
-				_response.IsSuccess = false;
-				_response.ErrorMessages.Add($"Lỗi hệ thống: {ex.Message}");
-				return StatusCode(500, _response);
-			}
-		}
 	}
 }

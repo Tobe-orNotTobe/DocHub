@@ -11,8 +11,10 @@ namespace DochubSystem.Data.DTOs
 		public string UserPhone { get; set; }
 		public string UserImageUrl { get; set; }
 		public string Specialization { get; set; }
-		public int Experience { get; set; }
-		public string LicenseNumber { get; set; }
+		public int? YearsOfExperience { get; set; }
+		public string? Bio { get; set; }
+		public string? HospitalName { get; set; }
+		public decimal? Rating { get; set; }
 		public bool IsActive { get; set; }
 	}
 
@@ -21,18 +23,10 @@ namespace DochubSystem.Data.DTOs
 		[Required]
 		public string UserId { get; set; }
 
-		[Required]
-		[StringLength(100)]
-		public string Specialization { get; set; }
-
-		[Required]
-		[Range(0, 50, ErrorMessage = "Experience must be between 0 and 50 years")]
-		public int Experience { get; set; }
-
-		[Required]
-		[StringLength(50)]
-		public string LicenseNumber { get; set; }
-
+		public string? Specialization { get; set; }
+		public int? YearsOfExperience { get; set; }
+		public string? Bio { get; set; }
+		public string? HospitalName { get; set; }
 		public bool IsActive { get; set; } = true;
 	}
 
@@ -41,11 +35,14 @@ namespace DochubSystem.Data.DTOs
 		[StringLength(100)]
 		public string? Specialization { get; set; }
 
-		[Range(0, 50, ErrorMessage = "Experience must be between 0 and 50 years")]
-		public int? Experience { get; set; }
+		[Range(0, 50, ErrorMessage = "Years of experience must be between 0 and 50")]
+		public int? YearsOfExperience { get; set; }
 
-		[StringLength(50)]
-		public string? LicenseNumber { get; set; }
+		[StringLength(1000)]
+		public string? Bio { get; set; }
+
+		[StringLength(200)]
+		public string? HospitalName { get; set; }
 
 		public bool? IsActive { get; set; }
 	}
@@ -55,7 +52,9 @@ namespace DochubSystem.Data.DTOs
 		public int DoctorId { get; set; }
 		public string UserName { get; set; }
 		public string Specialization { get; set; }
-		public int Experience { get; set; }
+		public int? YearsOfExperience { get; set; }
+		public string? HospitalName { get; set; }
+		public decimal? Rating { get; set; }
 		public bool IsActive { get; set; }
 		public string UserImageUrl { get; set; }
 	}

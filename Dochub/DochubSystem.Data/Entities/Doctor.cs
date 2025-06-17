@@ -14,11 +14,15 @@ namespace DochubSystem.Data.Entities
         public string UserId { get; set; }
 
         public string Specialization { get; set; }
-        public int Experience { get; set; }
-        public string LicenseNumber { get; set; }
-        public bool IsActive { get; set; } = true;
-
-        public User User { get; set; }
+        public int? YearsOfExperience { get; set; }
+		public string? Bio { get; set; }
+		public string? HospitalName { get; set; }
+		[Range(0, 5)]
+		[Column(TypeName = "decimal(2,1)")]
+		public decimal? Rating { get; set; }
+		public bool IsActive { get; set; } = true;
+	
+		public User User { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
     }
 }

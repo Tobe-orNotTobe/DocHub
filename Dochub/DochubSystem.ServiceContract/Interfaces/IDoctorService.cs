@@ -13,6 +13,5 @@ namespace DochubSystem.ServiceContract.Interfaces
 		Task<DoctorDTO> GetDoctorByUserIdAsync(string userId);
 		Task<IEnumerable<DoctorSummaryDTO>> GetDoctorsBySpecializationAsync(string specialization);
 		Task<bool> DoctorExistsAsync(int doctorId);
-		Task<bool> IsLicenseNumberUniqueAsync(string licenseNumber, int? excludeDoctorId = null);
 	}
 }
