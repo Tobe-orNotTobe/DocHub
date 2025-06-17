@@ -57,6 +57,165 @@ namespace DochubSystem.API.Controllers
 			return Ok(_response);
 		}
 
-		
+		/// <summary>
+		/// Lấy danh sách tất cả người dùng kèm vai trò.
+		/// </summary>
+		[HttpGet("getAllUsers")]
+		public async Task<IActionResult> GetAllUsers()
+		{
+			var users = await _adminService.GetAllUsersWithRolesAsync();
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = users;
+			return Ok(_response);
+		}
+
+		/// <summary>
+		/// Lấy thông tin người dùng theo Id.
+		/// </summary>
+		[HttpGet("getUserById/{id}")]
+		public async Task<IActionResult> GetUserById(string id)
+		{
+			var userData = await _adminService.GetUserByIdWithRolesAsync(id);
+
+			if (userData == null)
+			{
+				_response.StatusCode = HttpStatusCode.NotFound;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add("Không tìm thấy người dùng");
+				return NotFound(_response);
+			}
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = userData;
+			return Ok(_response);
+		}
+
+		/// <summary>
+		/// Xóa người dùng theo Id.
+		/// </summary>
+		[HttpDelete("deleteUser/{id}")]
+		public async Task<IActionResult> DeleteUser(string id)
+		{
+			var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+			var result = await _adminService.DeleteUserAsync(id, currentUserId);
+
+			if (!result.Success)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages = result.Errors;
+				return BadRequest(_response);
+			}
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = result.Message;
+			return Ok(_response);
+		}
+
+		/// <summary>
+		/// Cập nhật thông tin người dùng.
+		/// </summary>
+		[HttpPut("updateUser")]
+		public async Task<IActionResult> UpdateUser([FromBody] UserDTO model)
+		{
+			var result = await _adminService.UpdateUserAsync(model);
+
+			if (!result.Success)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages = result.Errors;
+				return BadRequest(_response);
+			}
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = result.Message;
+			return Ok(_response);
+		}
+
+		/// <summary>
+		/// Kích hoạt tài khoản người dùng theo Id.
+		/// </summary>
+		[HttpPut("activate/{id}")]
+		public async Task<IActionResult> ActivateUser(string id)
+		{
+			var result = await _adminService.ActivateUserAsync(id);
+
+			if (!result.Success)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages = result.Errors;
+				return BadRequest(_response);
+			}
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = result.Message;
+			return Ok(_response);
+		}
+
+		/// <summary>
+		/// Vô hiệu hóa tài khoản người dùng theo Id.
+		/// </summary>
+		[HttpPut("deactivate/{id}")]
+		public async Task<IActionResult> DeactivateUser(string id)
+		{
+			var result = await _adminService.DeactivateUserAsync(id);
+
+			if (!result.Success)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages = result.Errors;
+				return BadRequest(_response);
+			}
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = result.Message;
+			return Ok(_response);
+		}
+
+		/// <summary>
+		/// Lấy danh sách tất cả các vai trò (Roles).
+		/// </summary>
+		[HttpGet("getAllRoles")]
+		public async Task<IActionResult> GetAllRoles()
+		{
+			var roles = await _adminService.GetAllRolesAsync();
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = roles;
+			return Ok(_response);
+		}
+
+		/// <summary>
+		/// Tạo vai trò (Role) mới.
+		/// </summary>
+		[HttpPost("createRole")]
+		public async Task<IActionResult> CreateRole([FromBody] string roleName)
+		{
+			var result = await _adminService.CreateRoleAsync(roleName);
+
+			if (!result.Success)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages = result.Errors;
+				return BadRequest(_response);
+			}
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = result.Message;
+			return Ok(_response);
+		}
 	}
 }
