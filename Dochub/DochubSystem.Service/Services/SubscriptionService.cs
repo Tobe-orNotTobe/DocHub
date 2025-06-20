@@ -12,12 +12,14 @@ namespace DochubSystem.Service.Services
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IMapper _mapper;
 		private readonly ILogger<SubscriptionService> _logger;
+		private readonly INotificationService _notificationService;
 
-		public SubscriptionService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<SubscriptionService> logger)
+		public SubscriptionService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<SubscriptionService> logger, INotificationService notificationService)
 		{
 			_unitOfWork = unitOfWork;
 			_mapper = mapper;
 			_logger = logger;
+			_notificationService = notificationService;
 		}
 
 		#region Subscription Management
@@ -77,15 +79,23 @@ namespace DochubSystem.Service.Services
 					PaidAmount = amount,
 					CreatedAt = DateTime.UtcNow,
 					UpdatedAt = DateTime.UtcNow,
-					ConsultationsUsed = 0
+					ConsultationsUsed = 0,
+					// Add payment info if provided
 				};
 
 				var createdSubscription = await _unitOfWork.UserSubscriptions.AddAsync(subscription);
-
 				await _unitOfWork.CompleteAsync();
+
+				// Create/Update payment transaction record if payment info provided
+				if (!string.IsNullOrEmpty(createSubscriptionDTO.PaymentGatewayTransactionId))
+				{
+					await CreateOrUpdatePaymentTransactionAsync(createSubscriptionDTO, createdSubscription, amount);
+				}
+
 				await transaction.CommitAsync();
 
-				_logger.LogInformation("Subscription created successfully for user {UserId}", createSubscriptionDTO.UserId);
+				_logger.LogInformation("Subscription created successfully for user {UserId} with ID {SubscriptionId}",
+					createSubscriptionDTO.UserId, createdSubscription.SubscriptionId);
 
 				// Get full subscription with plan details
 				var fullSubscription = await _unitOfWork.UserSubscriptions.GetAsync(
@@ -94,6 +104,9 @@ namespace DochubSystem.Service.Services
 
 				var result = _mapper.Map<UserSubscriptionDTO>(fullSubscription);
 				CalculateRemainingConsultations(result, fullSubscription);
+
+				// Send success notifications (after transaction commit)
+				_ = Task.Run(async () => await SendMembershipSuccessNotificationsAsync(fullSubscription, plan));
 
 				return result;
 			}
@@ -744,6 +757,106 @@ namespace DochubSystem.Service.Services
 			return true;
 		}
 
+		/// <summary>
+		/// Create or update payment transaction record
+		/// </summary>
+		private async Task CreateOrUpdatePaymentTransactionAsync(
+			CreateSubscriptionDTO createSubscriptionDTO,
+			UserSubscription subscription,
+			decimal amount)
+		{
+			try
+			{
+				// Try to find existing payment transaction by gateway transaction ID
+				var existingTransaction = await _unitOfWork.PaymentTransactions.GetAsync(
+					pt => pt.PaymentGatewayTransactionId == createSubscriptionDTO.PaymentGatewayTransactionId);
+
+
+				if (existingTransaction != null)
+				{
+					// Update existing transaction
+					existingTransaction.Status = "Completed";
+					existingTransaction.SubscriptionId = subscription.SubscriptionId;
+					existingTransaction.ProcessedAt = DateTime.UtcNow;
+					await _unitOfWork.PaymentTransactions.UpdateAsync(existingTransaction);
+				}
+				else
+				{
+					// Create new payment transaction record
+					var paymentTransaction = new PaymentTransaction
+					{
+						TransactionRef = $"SUB_{subscription.SubscriptionId}_{DateTime.UtcNow:yyyyMMddHHmmss}",
+						UserId = createSubscriptionDTO.UserId,
+						SubscriptionId = subscription.SubscriptionId,
+						Amount = amount,
+						PaymentMethod = createSubscriptionDTO.PaymentMethod ?? "Unknown",
+						Status = "Completed",
+						TransactionType = "Subscription",
+						PaymentGatewayTransactionId = createSubscriptionDTO.PaymentGatewayTransactionId,
+						OrderInfo = $"Thanh toan goi {subscription.SubscriptionPlan?.Name ?? "Unknown"} - {createSubscriptionDTO.BillingCycle}",
+						BillingCycle = createSubscriptionDTO.BillingCycle,
+						Currency = "VND",
+						CreatedAt = DateTime.UtcNow,
+						ProcessedAt = DateTime.UtcNow
+					};
+
+					await _unitOfWork.PaymentTransactions.AddAsync(paymentTransaction);
+				}
+
+				await _unitOfWork.CompleteAsync();
+				_logger.LogInformation("Payment transaction processed for subscription {SubscriptionId}", subscription.SubscriptionId);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error processing payment transaction for subscription {SubscriptionId}", subscription.SubscriptionId);
+				// Don't throw - payment transaction failure shouldn't break subscription creation
+			}
+		}
+
+		/// <summary>
+		/// Send membership success notifications
+		/// </summary>
+		private async Task SendMembershipSuccessNotificationsAsync(UserSubscription subscription, SubscriptionPlan plan)
+		{
+			try
+			{
+				// Get user info for notification
+				var user = await _unitOfWork.Users.GetUserByIdAsync(subscription.UserId);
+				if (user == null)
+				{
+					_logger.LogWarning("User not found for notification: {UserId}", subscription.UserId);
+					return;
+				}
+
+				var parameters = new Dictionary<string, object>
+				{
+					["UserName"] = user.FullName ?? user.UserName ?? "Khách hàng",
+					["PlanName"] = plan.Name,
+					["Amount"] = subscription.PaidAmount.ToString("N0") ?? "0",
+					["BillingCycle"] = subscription.BillingCycle == "Monthly" ? "hàng tháng" : "hàng năm",
+					["StartDate"] = subscription.StartDate.ToString("dd/MM/yyyy"),
+					["EndDate"] = subscription.EndDate.ToString("dd/MM/yyyy"),
+					["SubscriptionId"] = subscription.SubscriptionId.ToString(),
+					["ActionUrl"] = "/subscription/status"
+				};
+
+				// Send membership activated notification
+				await _notificationService.SendNotificationAsync(new SendNotificationRequestDTO
+				{
+					UserId = subscription.UserId,
+					NotificationType = "MEMBERSHIP_ACTIVATED",
+					Parameters = parameters,
+					Priority = "NORMAL"
+				});
+
+				_logger.LogInformation("Sent membership success notification to user {UserId}", subscription.UserId);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error sending membership success notification for user {UserId}", subscription.UserId);
+				// Don't throw - notification failure shouldn't break subscription creation
+			}
+		}
 		#endregion
 	}
 }

@@ -3,8 +3,10 @@ using DochubSystem.Data.DTOs;
 using DochubSystem.ServiceContract.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace DochubSystem.API.Controllers
 {
@@ -18,18 +20,21 @@ namespace DochubSystem.API.Controllers
 		private readonly APIResponse _response;
 		private readonly ILogger<PaymentController> _logger;
 		private readonly IConfiguration _configuration;
+		private readonly IMemoryCache _cache;
 
 		public PaymentController(
 			ISubscriptionService subscriptionService,
 			IPaymentService paymentService,
 			APIResponse response,
-			ILogger<PaymentController> logger, IConfiguration configuration)
+			ILogger<PaymentController> logger, IConfiguration configuration, 
+			IMemoryCache cache)
 		{
 			_subscriptionService = subscriptionService;
 			_paymentService = paymentService;
 			_response = response;
 			_logger = logger;
-			_configuration = configuration;
+			_configuration = configuration; 
+			_cache = cache;
 		}
 
 		/// <summary>
@@ -266,7 +271,7 @@ namespace DochubSystem.API.Controllers
 			}
 		}
 
-		#region Helper Methods
+		#region Helper Methods Implementation
 
 		private string GetClientIpAddress()
 		{
@@ -284,24 +289,72 @@ namespace DochubSystem.API.Controllers
 
 		private async Task SavePendingPaymentAsync(string transactionRef, CreatePaymentRequestDTO payment)
 		{
-			// Implement caching logic (Redis, MemoryCache, or Database)
-			// Example: await _cache.SetStringAsync(transactionRef, JsonSerializer.Serialize(payment), TimeSpan.FromMinutes(30));
+			try
+			{
+				var pendingPayment = new
+				{
+					UserId = payment.UserId,
+					PlanId = payment.PlanId,
+					BillingCycle = payment.BillingCycle,
+					PaymentMethod = payment.PaymentMethod,
+					Amount = payment.Amount,
+					SubscriptionType = payment.SubscriptionType,
+					CreatedAt = DateTime.UtcNow,
+					IpAddress = payment.IpAddress
+				};
+
+				var json = JsonSerializer.Serialize(pendingPayment);
+				var cacheKey = $"pending_payment_{transactionRef}";
+
+				// Store for 30 minutes
+				_cache.Set(cacheKey, json, TimeSpan.FromMinutes(30));
+
+				_logger.LogInformation("Saved pending payment for transaction {TransactionRef}", transactionRef);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error saving pending payment for transaction {TransactionRef}", transactionRef);
+			}
 		}
 
 		private async Task<CreatePaymentRequestDTO> GetPendingPaymentAsync(string transactionRef)
 		{
-			// Implement caching logic
-			// Example: var json = await _cache.GetStringAsync(transactionRef);
-			// return json != null ? JsonSerializer.Deserialize<CreatePaymentRequestDTO>(json) : null;
-			return null; // Placeholder
+			try
+			{
+				var cacheKey = $"pending_payment_{transactionRef}";
+
+				if (_cache.TryGetValue(cacheKey, out string json))
+				{
+					var pendingPayment = JsonSerializer.Deserialize<CreatePaymentRequestDTO>(json);
+					_logger.LogInformation("Retrieved pending payment for transaction {TransactionRef}", transactionRef);
+					return pendingPayment;
+				}
+
+				_logger.LogWarning("No pending payment found for transaction {TransactionRef}", transactionRef);
+				return null;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error retrieving pending payment for transaction {TransactionRef}", transactionRef);
+				return null;
+			}
 		}
 
 		private async Task RemovePendingPaymentAsync(string transactionRef)
 		{
-			// Implement cache removal
-			// Example: await _cache.RemoveAsync(transactionRef);
-		}
+			try
+			{
+				var cacheKey = $"pending_payment_{transactionRef}";
+				_cache.Remove(cacheKey);
 
+				_logger.LogInformation("Removed pending payment for transaction {TransactionRef}", transactionRef);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error removing pending payment for transaction {TransactionRef}", transactionRef);
+			}
+		}
 		#endregion
 	}
 }
+

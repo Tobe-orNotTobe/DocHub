@@ -19,6 +19,8 @@
 		public const string MEMBERSHIP_EXPIRING = "MEMBERSHIP_EXPIRING";
 		public const string MEMBERSHIP_RENEWED = "MEMBERSHIP_RENEWED";
 		public const string MEMBERSHIP_EXPIRED = "MEMBERSHIP_EXPIRED";
+		public const string MEMBERSHIP_ACTIVATED = "MEMBERSHIP_ACTIVATED";
+		public const string MEMBERSHIP_PAYMENT_SUCCESS = "MEMBERSHIP_PAYMENT_SUCCESS";
 
 		// System notifications
 		public const string WELCOME_MESSAGE = "WELCOME_MESSAGE";

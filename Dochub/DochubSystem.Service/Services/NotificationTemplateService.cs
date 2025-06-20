@@ -382,7 +382,115 @@ namespace DochubSystem.Service.Services
 					TargetRole = TargetRoles.ALL,
 					RequiresEmail = true,
 					RequiresInApp = true
-				}
+				},
+				new NotificationTemplate
+		{
+			Name = "Membership Activated",
+			Type = NotificationTypes.MEMBERSHIP_ACTIVATED,
+			Subject = "🎉 Chúc mừng! Gói membership đã được kích hoạt",
+			NotificationBody = "Gói {PlanName} của bạn đã được kích hoạt thành công! Bạn có thể bắt đầu sử dụng các tính năng premium ngay bây giờ.",
+			EmailBody = @"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+                    <div style='text-align: center; margin-bottom: 30px;'>
+                        <h1 style='color: #14b8a6; margin-bottom: 10px;'>🎉 Chúc mừng!</h1>
+                        <h2 style='color: #374151; margin: 0;'>Gói membership đã được kích hoạt</h2>
+                    </div>
+                    
+                    <div style='background: #f0fdfa; border: 1px solid #14b8a6; border-radius: 8px; padding: 20px; margin-bottom: 25px;'>
+                        <h3 style='color: #14b8a6; margin-top: 0;'>Thông tin gói membership</h3>
+                        <table style='width: 100%; border-collapse: collapse;'>
+                            <tr>
+                                <td style='padding: 8px 0; color: #6b7280;'>Gói:</td>
+                                <td style='padding: 8px 0; font-weight: bold; color: #374151;'>{PlanName}</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 8px 0; color: #6b7280;'>Chu kỳ:</td>
+                                <td style='padding: 8px 0; font-weight: bold; color: #374151;'>{BillingCycle}</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 8px 0; color: #6b7280;'>Số tiền:</td>
+                                <td style='padding: 8px 0; font-weight: bold; color: #14b8a6;'>{Amount} VND</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 8px 0; color: #6b7280;'>Ngày bắt đầu:</td>
+                                <td style='padding: 8px 0; font-weight: bold; color: #374151;'>{StartDate}</td>
+                            </tr>
+                            <tr>
+                                <td style='padding: 8px 0; color: #6b7280;'>Ngày hết hạn:</td>
+                                <td style='padding: 8px 0; font-weight: bold; color: #374151;'>{EndDate}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div style='margin-bottom: 25px;'>
+                        <h3 style='color: #374151;'>Những gì bạn có thể làm ngay bây giờ:</h3>
+                        <ul style='color: #6b7280; line-height: 1.6;'>
+                            <li>Đặt lịch hẹn với bác sĩ chuyên khoa</li>
+                            <li>Tư vấn sức khỏe qua video call</li>
+                            <li>Truy cập báo cáo sức khỏe chi tiết</li>
+                            <li>Nhận ưu đãi giảm phí khám bệnh</li>
+                            <li>Hỗ trợ 24/7 từ đội ngũ chuyên gia</li>
+                        </ul>
+                    </div>
+                    
+                    <div style='text-align: center; margin-bottom: 25px;'>
+                        <a href='https://dochub.vn{ActionUrl}' style='background: #14b8a6; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;'>
+                            Xem chi tiết membership
+                        </a>
+                    </div>
+                    
+                    <div style='background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 25px;'>
+                        <h4 style='color: #374151; margin-top: 0;'>💡 Mẹo sử dụng:</h4>
+                        <p style='color: #6b7280; margin: 0; line-height: 1.6;'>
+                            Hãy bắt đầu bằng việc cập nhật hồ sơ y tế của bạn để các bác sĩ có thể tư vấn chính xác nhất. 
+                            Bạn cũng có thể đặt lịch hẹn đầu tiên để khám sức khỏe tổng quát.
+                        </p>
+                    </div>
+                    
+                    <div style='text-align: center; color: #6b7280; font-size: 14px;'>
+                        <p>Cảm ơn bạn đã tin tưởng và lựa chọn Dochub!</p>
+                        <p>Mã subscription: {SubscriptionId}</p>
+                    </div>
+                </div>",
+			Priority = "NORMAL",
+			TargetRole = "CUSTOMER",
+			RequiresEmail = true,
+			RequiresInApp = true,
+			IsActive = true
+		},
+
+        // Add payment success template (for immediate feedback)
+        new NotificationTemplate
+		{
+			Name = "Membership Payment Success",
+			Type = NotificationTypes.MEMBERSHIP_PAYMENT_SUCCESS,
+			Subject = "✅ Thanh toán thành công",
+			NotificationBody = "Thanh toán gói {PlanName} thành công! Gói membership sẽ được kích hoạt trong vòng vài phút.",
+			EmailBody = @"
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+                    <div style='text-align: center; margin-bottom: 30px;'>
+                        <h1 style='color: #059669;'>✅</h1>
+                        <h2 style='color: #374151; margin: 0;'>Thanh toán thành công!</h2>
+                    </div>
+                    
+                    <div style='background: #ecfdf5; border: 1px solid #10b981; border-radius: 8px; padding: 20px; text-align: center;'>
+                        <p style='color: #374151; margin: 0; font-size: 16px;'>
+                            Cảm ơn bạn đã thanh toán gói <strong>{PlanName}</strong>!<br>
+                            Gói membership sẽ được kích hoạt trong vòng vài phút.
+                        </p>
+                    </div>
+                    
+                    <div style='margin: 25px 0; text-align: center; color: #6b7280;'>
+                        <p>Bạn sẽ nhận được email xác nhận khi gói membership được kích hoạt.</p>
+                    </div>
+                </div>",
+			Priority = "HIGH",
+			TargetRole = "CUSTOMER",
+			RequiresEmail = true,
+			RequiresInApp = true,
+			IsActive = true
+		}
+
 			};
 		}
 	}

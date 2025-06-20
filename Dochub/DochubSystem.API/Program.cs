@@ -109,6 +109,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
