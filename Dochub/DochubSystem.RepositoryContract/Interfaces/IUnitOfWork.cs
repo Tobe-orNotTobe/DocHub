@@ -22,8 +22,9 @@ namespace DochubSystem.RepositoryContract.Interfaces
 		INotificationTemplateRepository NotificationTemplates { get; }
 		INotificationQueueRepository NotificationQueues { get; }
 		INotificationHistoryRepository NotificationHistories { get; }
+        IChatRepository Chats { get; }
 
-		Task<int> CompleteAsync();
+        Task<int> CompleteAsync();
 
         Task<IDbContextTransaction> BeginTransactionAsync();
 

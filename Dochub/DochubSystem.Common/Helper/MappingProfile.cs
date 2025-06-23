@@ -178,6 +178,10 @@ namespace DochubSystem.Common.Helper
 				.ForMember(dest => dest.TemplateName, opt => opt.MapFrom(src => src.NotificationTemplate != null ? src.NotificationTemplate.Name : string.Empty));
 
 			CreateMap<NotificationHistory, NotificationHistoryDTO>();
-		}
-	}
+            //Chat
+            CreateMap<Chat, ChatDTO>();
+            CreateMap<CreateChatWithUserDTO, Chat>();
+
+        }
+    }
 }

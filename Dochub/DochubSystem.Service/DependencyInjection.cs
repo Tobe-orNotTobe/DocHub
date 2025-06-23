@@ -34,8 +34,9 @@ namespace DochubSystem.Service
 			services.AddHostedService<NotificationBackgroundService>();
 			services.AddHostedService<HighPriorityNotificationService>();
 			services.AddHostedService<AppointmentReminderService>();
+            services.AddScoped<IChatService, ChatService>();
 
-			return services;
+            return services;
         }
     }
 }

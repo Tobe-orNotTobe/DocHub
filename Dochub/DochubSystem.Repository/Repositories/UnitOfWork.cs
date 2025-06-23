@@ -26,8 +26,9 @@ namespace DochubSystem.Repository.Repositories
 		public INotificationTemplateRepository NotificationTemplates { get; }
 		public INotificationQueueRepository NotificationQueues { get; }
 		public INotificationHistoryRepository NotificationHistories { get; }
+        public IChatRepository Chats { get; }
 
-		public UnitOfWork(DochubDbContext context,
+        public UnitOfWork(DochubDbContext context,
 					   IUserRepository userRepository,
 						IDoctorRepository doctorRepository,
 					   IAppointmentRepository appointmentRepository,
@@ -40,7 +41,7 @@ namespace DochubSystem.Repository.Repositories
 				 INotificationRepository notificationRepository,
 						 INotificationTemplateRepository notificationTemplateRepository,
 						 INotificationQueueRepository notificationQueueRepository,
-						 INotificationHistoryRepository notificationHistoryRepository)
+						 INotificationHistoryRepository notificationHistoryRepository, IChatRepository chatRepository)
 		{
 			_context = context;
 			Users = userRepository;
@@ -56,10 +57,12 @@ namespace DochubSystem.Repository.Repositories
 			NotificationTemplates = notificationTemplateRepository;
 			NotificationQueues = notificationQueueRepository;
 			NotificationHistories = notificationHistoryRepository;
-		}
+            Chats = chatRepository;
+
+        }
 
 
-		public async Task<int> CompleteAsync()
+        public async Task<int> CompleteAsync()
 		{
 			return await _context.SaveChangesAsync();
 		}
