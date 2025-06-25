@@ -266,5 +266,21 @@ namespace DochubSystem.Service.Services
 		{
 			return Task.CompletedTask;
 		}
-	}
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(string userId, string oldPassword, string newPassword)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return (false, "Không tìm thấy người dùng.");
+
+            var result = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                return (false, $"Đổi mật khẩu không thành công: {errors}");
+            }
+
+            return (true, "Đổi mật khẩu thành công.");
+        }
+
+    }
 }

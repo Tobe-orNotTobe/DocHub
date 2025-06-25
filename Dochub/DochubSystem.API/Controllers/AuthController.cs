@@ -4,6 +4,7 @@ using DochubSystem.ServiceContract.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace DochubSystem.API.Controllers
 {
@@ -197,5 +198,51 @@ namespace DochubSystem.API.Controllers
 				return BadRequest(_response);
 			}
 		}
-	}
+
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO dto)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(dto.OldPassword) || string.IsNullOrWhiteSpace(dto.NewPassword))
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Vui lòng nhập đầy đủ mật khẩu cũ và mới.");
+                    return BadRequest(_response);
+                }
+
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null)
+                {
+                    _response.StatusCode = HttpStatusCode.Unauthorized;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add("Không xác định được người dùng.");
+                    return Unauthorized(_response);
+                }
+
+                var (success, message) = await _authService.ChangePasswordAsync(userId, dto.OldPassword, dto.NewPassword);
+                if (!success)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages.Add(message);
+                    return BadRequest(_response);
+                }
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = new { Message = message };
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Lỗi hệ thống: " + ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, _response);
+            }
+        }
+    }
 }

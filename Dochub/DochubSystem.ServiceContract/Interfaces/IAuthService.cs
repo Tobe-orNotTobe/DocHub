@@ -12,6 +12,7 @@ namespace DochubSystem.ServiceContract.Interfaces
 		Task LogoutAsync(string refreshToken);
 		Task<bool> ForgetPasswordAsync(string email);
 		Task<(bool Success, string Message)> ResetPasswordAsync(string email, string token, string newPassword);
-		string GenerateJwtToken(User user);
+        Task<(bool Success, string Message)> ChangePasswordAsync(string userId, string oldPassword, string newPassword);
+        string GenerateJwtToken(User user);
 	}
 }
