@@ -37,8 +37,10 @@ namespace DochubSystem.Service.Services
 				Bio = createDoctorDTO.Bio ?? "Need Update",
 				HospitalName = createDoctorDTO.HospitalName ?? "Need Update",
 				Rating = null, 
-				IsActive = createDoctorDTO.IsActive
-			};
+				IsActive = createDoctorDTO.IsActive,
+                ImageDoctor = createDoctorDTO.ImageDoctor // ✅ mới thêm
+
+            };
 
 			var createdDoctor = await _unitOfWork.Doctors.AddAsync(doctor);
 			await _unitOfWork.CompleteAsync();
@@ -110,7 +112,10 @@ namespace DochubSystem.Service.Services
 			if (updateDoctorDTO.IsActive.HasValue)
 				doctor.IsActive = updateDoctorDTO.IsActive.Value;
 
-			await _unitOfWork.Doctors.UpdateAsync(doctor);
+            if (!string.IsNullOrEmpty(updateDoctorDTO.ImageDoctor)) // ✅ mới thêm
+                doctor.ImageDoctor = updateDoctorDTO.ImageDoctor;
+
+            await _unitOfWork.Doctors.UpdateAsync(doctor);
 			await _unitOfWork.CompleteAsync();
 
 			return _mapper.Map<DoctorDTO>(doctor);

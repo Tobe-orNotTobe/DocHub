@@ -64,33 +64,36 @@ namespace DochubSystem.Common.Helper
 				.ForMember(dest => dest.MedicalRecords, opt => opt.Ignore())
 				.ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-			// Doctor Mappings
-			CreateMap<CreateDoctorDTO, Doctor>()
-				.ForMember(dest => dest.DoctorId, opt => opt.Ignore())
-				.ForMember(dest => dest.User, opt => opt.Ignore())
-				.ForMember(dest => dest.Appointments, opt => opt.Ignore());
+            // Doctor Mappings
+            CreateMap<CreateDoctorDTO, Doctor>()
+                .ForMember(dest => dest.DoctorId, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.Appointments, opt => opt.Ignore());
 
-			CreateMap<Doctor, DoctorDTO>()
-				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
-				.ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : string.Empty))
-				.ForMember(dest => dest.UserPhone, opt => opt.MapFrom(src => src.User != null ? src.User.PhoneNumber : string.Empty))
-				.ForMember(dest => dest.UserImageUrl, opt => opt.MapFrom(src => src.User != null ? src.User.ImageUrl : string.Empty));
+            CreateMap<Doctor, DoctorDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
+                .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : string.Empty))
+                .ForMember(dest => dest.UserPhone, opt => opt.MapFrom(src => src.User != null ? src.User.PhoneNumber : string.Empty))
+                .ForMember(dest => dest.UserImageUrl, opt => opt.MapFrom(src => src.User != null ? src.User.ImageUrl : string.Empty))
+                .ForMember(dest => dest.ImageDoctor, opt => opt.MapFrom(src => src.ImageDoctor)); // ✅ thêm
 
-			CreateMap<Doctor, DoctorSummaryDTO>()
-				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
-				.ForMember(dest => dest.UserImageUrl, opt => opt.MapFrom(src => src.User != null ? src.User.ImageUrl : string.Empty));
+            CreateMap<Doctor, DoctorSummaryDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
+                .ForMember(dest => dest.UserImageUrl, opt => opt.MapFrom(src => src.User != null ? src.User.ImageUrl : string.Empty))
+                .ForMember(dest => dest.ImageDoctor, opt => opt.MapFrom(src => src.ImageDoctor)); // ✅ thêm
 
-			CreateMap<UpdateDoctorDTO, Doctor>()
-				.ForMember(dest => dest.DoctorId, opt => opt.Ignore())
-				.ForMember(dest => dest.UserId, opt => opt.Ignore())
-				.ForMember(dest => dest.User, opt => opt.Ignore())
-				.ForMember(dest => dest.Appointments, opt => opt.Ignore())
-				.ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<UpdateDoctorDTO, Doctor>()
+                .ForMember(dest => dest.DoctorId, opt => opt.Ignore())
+                .ForMember(dest => dest.UserId, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.Appointments, opt => opt.Ignore())
+                .ForAllMembers(opt => opt.Condition((src, dest, srcMember) => srcMember != null));
 
-		
 
-			// Subscription Plan Mappings
-			CreateMap<SubscriptionPlan, SubscriptionPlanDTO>();
+
+
+            // Subscription Plan Mappings
+            CreateMap<SubscriptionPlan, SubscriptionPlanDTO>();
 			CreateMap<CreateSubscriptionPlanDTO, SubscriptionPlan>()
 				.ForMember(dest => dest.PlanId, opt => opt.Ignore())
 				.ForMember(dest => dest.CreatedAt, opt => opt.Ignore())

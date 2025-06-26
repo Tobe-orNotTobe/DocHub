@@ -21,8 +21,9 @@ namespace DochubSystem.Data.Entities
 		[Column(TypeName = "decimal(2,1)")]
 		public decimal? Rating { get; set; }
 		public bool IsActive { get; set; } = true;
-	
-		public User User { get; set; }
+        public string? ImageDoctor { get; set; }   // ✅ ảnh bác sĩ
+
+        public User User { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
     }
 }

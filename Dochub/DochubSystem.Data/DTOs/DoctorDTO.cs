@@ -13,7 +13,8 @@ namespace DochubSystem.Data.DTOs
 		public string Specialization { get; set; }
 		public int? YearsOfExperience { get; set; }
 		public string? Bio { get; set; }
-		public string? HospitalName { get; set; }
+        public string? ImageDoctor { get; set; }  // ✅ Thêm dòng này
+        public string? HospitalName { get; set; }
 		public decimal? Rating { get; set; }
 		public bool IsActive { get; set; }
 	}
@@ -28,9 +29,11 @@ namespace DochubSystem.Data.DTOs
 		public string? Bio { get; set; }
 		public string? HospitalName { get; set; }
 		public bool IsActive { get; set; } = true;
-	}
+        public string? ImageDoctor { get; set; }  // ✅ Thêm dòng này
 
-	public class UpdateDoctorDTO
+    }
+
+    public class UpdateDoctorDTO
 	{
 		[StringLength(100)]
 		public string? Specialization { get; set; }
@@ -45,9 +48,11 @@ namespace DochubSystem.Data.DTOs
 		public string? HospitalName { get; set; }
 
 		public bool? IsActive { get; set; }
-	}
+        public string? ImageDoctor { get; set; }  // ✅ Thêm dòng này
 
-	public class DoctorSummaryDTO
+    }
+
+    public class DoctorSummaryDTO
 	{
 		public int DoctorId { get; set; }
 		public string UserName { get; set; }
@@ -57,5 +62,7 @@ namespace DochubSystem.Data.DTOs
 		public decimal? Rating { get; set; }
 		public bool IsActive { get; set; }
 		public string UserImageUrl { get; set; }
-	}
+        public string? ImageDoctor { get; set; }  // ✅ Thêm dòng này
+
+    }
 }
