@@ -42,12 +42,14 @@ namespace DochubSystem.Common.Helper
 				.ForMember(dest => dest.Chats, opt => opt.Ignore())
 				.ForMember(dest => dest.MedicalRecords, opt => opt.Ignore());
 
-			CreateMap<Appointment, AppointmentDTO>()
-				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
-				.ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : string.Empty))
-				.ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor != null && src.Doctor.User != null ? src.Doctor.User.FullName : string.Empty));
+            CreateMap<Appointment, AppointmentDTO>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
+                .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User != null ? src.User.Email : string.Empty))
+                .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor != null && src.Doctor.User != null ? src.Doctor.User.FullName : string.Empty))
+                .ForMember(dest => dest.Specialization, opt => opt.MapFrom(src => src.Doctor != null ? src.Doctor.Specialization : string.Empty))
+                .ForMember(dest => dest.DoctorImageUrl, opt => opt.MapFrom(src => src.Doctor != null ? src.Doctor.ImageDoctor : string.Empty));
 
-			CreateMap<Appointment, AppointmentSummaryDTO>()
+            CreateMap<Appointment, AppointmentSummaryDTO>()
 				.ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.User != null ? src.User.FullName : string.Empty))
 				.ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.Doctor != null && src.Doctor.User != null ? src.Doctor.User.FullName : string.Empty))
 				.ForMember(dest => dest.DoctorSpecialization, opt => opt.MapFrom(src => src.Doctor != null ? src.Doctor.Specialization : string.Empty));

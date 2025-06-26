@@ -117,8 +117,7 @@ namespace DochubSystem.Service.Services
 		{
 			var appointments = await _unitOfWork.Appointments.GetAllAsync(
 				filter: a => a.DoctorId == doctorId,
-				includeProperties: "User"
-			);
+				includeProperties: "Doctor,Doctor.User,User");
 
 			return _mapper.Map<IEnumerable<AppointmentDTO>>(appointments);
 		}

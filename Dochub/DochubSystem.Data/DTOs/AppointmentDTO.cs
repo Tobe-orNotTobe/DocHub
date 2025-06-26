@@ -11,7 +11,9 @@ namespace DochubSystem.Data.DTOs
 		public int DoctorId { get; set; }
 		public string DoctorName { get; set; }
 		public DateTime AppointmentDate { get; set; }
-		public string Status { get; set; }
+        public string Specialization { get; set; }      // ✅ thêm
+        public string DoctorImageUrl { get; set; }      // ✅ thêm
+        public string Status { get; set; }
 		public string? Symptoms { get; set; }
 		public DateTime CreatedAt { get; set; }
 		public DateTime UpdatedAt { get; set; }
