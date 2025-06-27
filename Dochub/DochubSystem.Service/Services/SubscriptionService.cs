@@ -86,12 +86,6 @@ namespace DochubSystem.Service.Services
 				var createdSubscription = await _unitOfWork.UserSubscriptions.AddAsync(subscription);
 				await _unitOfWork.CompleteAsync();
 
-				// Create/Update payment transaction record if payment info provided
-				if (!string.IsNullOrEmpty(createSubscriptionDTO.PaymentGatewayTransactionId))
-				{
-					await CreateOrUpdatePaymentTransactionAsync(createSubscriptionDTO, createdSubscription, amount);
-				}
-
 				await transaction.CommitAsync();
 
 				_logger.LogInformation("Subscription created successfully for user {UserId} with ID {SubscriptionId}",
@@ -755,62 +749,6 @@ namespace DochubSystem.Service.Services
 			}
 
 			return true;
-		}
-
-		/// <summary>
-		/// Create or update payment transaction record
-		/// </summary>
-		private async Task CreateOrUpdatePaymentTransactionAsync(
-			CreateSubscriptionDTO createSubscriptionDTO,
-			UserSubscription subscription,
-			decimal amount)
-		{
-			try
-			{
-				// Try to find existing payment transaction by gateway transaction ID
-				var existingTransaction = await _unitOfWork.PaymentTransactions.GetAsync(
-					pt => pt.PaymentGatewayTransactionId == createSubscriptionDTO.PaymentGatewayTransactionId);
-
-
-				if (existingTransaction != null)
-				{
-					// Update existing transaction
-					existingTransaction.Status = "Completed";
-					existingTransaction.SubscriptionId = subscription.SubscriptionId;
-					existingTransaction.ProcessedAt = DateTime.UtcNow;
-					await _unitOfWork.PaymentTransactions.UpdateAsync(existingTransaction);
-				}
-				else
-				{
-					// Create new payment transaction record
-					var paymentTransaction = new PaymentTransaction
-					{
-						TransactionRef = $"SUB_{subscription.SubscriptionId}_{DateTime.UtcNow:yyyyMMddHHmmss}",
-						UserId = createSubscriptionDTO.UserId,
-						SubscriptionId = subscription.SubscriptionId,
-						Amount = amount,
-						PaymentMethod = createSubscriptionDTO.PaymentMethod ?? "Unknown",
-						Status = "Completed",
-						TransactionType = "Subscription",
-						PaymentGatewayTransactionId = createSubscriptionDTO.PaymentGatewayTransactionId,
-						OrderInfo = $"Thanh toan goi {subscription.SubscriptionPlan?.Name ?? "Unknown"} - {createSubscriptionDTO.BillingCycle}",
-						BillingCycle = createSubscriptionDTO.BillingCycle,
-						Currency = "VND",
-						CreatedAt = DateTime.UtcNow,
-						ProcessedAt = DateTime.UtcNow
-					};
-
-					await _unitOfWork.PaymentTransactions.AddAsync(paymentTransaction);
-				}
-
-				await _unitOfWork.CompleteAsync();
-				_logger.LogInformation("Payment transaction processed for subscription {SubscriptionId}", subscription.SubscriptionId);
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError(ex, "Error processing payment transaction for subscription {SubscriptionId}", subscription.SubscriptionId);
-				// Don't throw - payment transaction failure shouldn't break subscription creation
-			}
 		}
 
 		/// <summary>

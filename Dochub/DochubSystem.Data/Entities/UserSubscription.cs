@@ -39,7 +39,5 @@ namespace DochubSystem.Data.Entities
 		public User User { get; set; }
 		public SubscriptionPlan SubscriptionPlan { get; set; }
 		public SubscriptionPlan PendingPlan { get; set; }
-
-		public ICollection<PaymentTransaction> Transactions { get; set; }
 	}
 }

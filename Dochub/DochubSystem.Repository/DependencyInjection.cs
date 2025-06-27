@@ -22,7 +22,6 @@ namespace DochubSystem.Repository
 			services.AddTransient<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
 			services.AddTransient<IUserSubscriptionRepository, UserSubscriptionRepository>();
 			services.AddTransient<IConsultationUsageRepository, ConsultationUsageRepository>();
-			services.AddTransient<IPaymentTransactionRepository, PaymentTransactionRepository>();
 			services.AddTransient<INotificationRepository, NotificationRepository>();
 			services.AddTransient<INotificationTemplateRepository, NotificationTemplateRepository>();
 			services.AddTransient<INotificationQueueRepository, NotificationQueueRepository>();

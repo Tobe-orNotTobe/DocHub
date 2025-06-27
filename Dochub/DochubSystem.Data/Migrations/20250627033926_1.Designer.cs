@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DochubSystem.Data.Migrations
 {
     [DbContext(typeof(DochubDbContext))]
-    [Migration("20250616225100_10")]
-    partial class _10
+    [Migration("20250627033926_1")]
+    partial class _1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -156,15 +156,20 @@ namespace DochubSystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DoctorId"));
 
-                    b.Property<int>("Experience")
-                        .HasColumnType("int");
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HospitalName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageDoctor")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LicenseNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<decimal?>("Rating")
+                        .HasColumnType("decimal(2,1)");
 
                     b.Property<string>("Specialization")
                         .IsRequired()
@@ -173,6 +178,9 @@ namespace DochubSystem.Data.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("YearsOfExperience")
+                        .HasColumnType("int");
 
                     b.HasKey("DoctorId");
 
@@ -221,16 +229,50 @@ namespace DochubSystem.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
 
+                    b.Property<string>("ActionUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ReadAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RelatedEntityId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RelatedEntityType")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -238,85 +280,247 @@ namespace DochubSystem.Data.Migrations
 
                     b.HasKey("NotificationId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_Notification_Status");
+
+                    b.HasIndex("Type")
+                        .HasDatabaseName("IX_Notification_Type");
+
+                    b.HasIndex("UserId", "CreatedAt")
+                        .HasDatabaseName("IX_Notification_User_CreatedAt");
+
+                    b.HasIndex("UserId", "Status")
+                        .HasDatabaseName("IX_Notification_User_Status");
 
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("DochubSystem.Data.Entities.PaymentTransaction", b =>
+            modelBuilder.Entity("DochubSystem.Data.Entities.NotificationHistory", b =>
                 {
-                    b.Property<int>("PaymentTransactionId")
+                    b.Property<int>("HistoryId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentTransactionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HistoryId"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int?>("AppointmentId")
+                        .HasColumnType("int");
 
-                    b.Property<string>("BillingCycle")
+                    b.Property<string>("DeliveryMethod")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmailBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotificationBody")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<string>("NotificationType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("ReadAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Currency")
-                        .IsRequired()
+                    b.Property<string>("RelatedEntityId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ExpiredAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("IpAddress")
+                    b.Property<string>("RelatedEntityType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OrderInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentGatewayResponse")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentGatewayTransactionId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ProcessedAt")
+                    b.Property<DateTime>("SentAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("SubscriptionId")
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("TemplateId")
                         .HasColumnType("int");
-
-                    b.Property<string>("TransactionRef")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TransactionType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserAgent")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("PaymentTransactionId");
+                    b.HasKey("HistoryId");
 
-                    b.HasIndex("SubscriptionId");
+                    b.HasIndex("NotificationType")
+                        .HasDatabaseName("IX_NotificationHistory_Type");
+
+                    b.HasIndex("SentAt")
+                        .HasDatabaseName("IX_NotificationHistory_SentAt");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("UserId", "SentAt")
+                        .HasDatabaseName("IX_NotificationHistory_User_SentAt");
+
+                    b.ToTable("NotificationHistories");
+                });
+
+            modelBuilder.Entity("DochubSystem.Data.Entities.NotificationQueue", b =>
+                {
+                    b.Property<int>("QueueId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QueueId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailBody")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MetaData")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotificationBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NotificationType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ScheduledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("QueueId");
+
+                    b.HasIndex("ScheduledAt")
+                        .HasDatabaseName("IX_NotificationQueue_ScheduledAt");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_NotificationQueue_Status");
+
+                    b.HasIndex("TemplateId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentTransactions");
+                    b.HasIndex("Status", "ScheduledAt")
+                        .HasDatabaseName("IX_NotificationQueue_Status_ScheduledAt");
+
+                    b.ToTable("NotificationQueues");
+                });
+
+            modelBuilder.Entity("DochubSystem.Data.Entities.NotificationTemplate", b =>
+                {
+                    b.Property<int>("TemplateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TemplateId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmailBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NotificationBody")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("RequiresEmail")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RequiresInApp")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("TargetRole")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("TemplateId");
+
+                    b.HasIndex("TargetRole")
+                        .HasDatabaseName("IX_NotificationTemplate_TargetRole");
+
+                    b.HasIndex("Type")
+                        .HasDatabaseName("IX_NotificationTemplate_Type");
+
+                    b.ToTable("NotificationTemplates");
                 });
 
             modelBuilder.Entity("DochubSystem.Data.Entities.Session", b =>
@@ -850,30 +1054,64 @@ namespace DochubSystem.Data.Migrations
 
             modelBuilder.Entity("DochubSystem.Data.Entities.Notification", b =>
                 {
+                    b.HasOne("DochubSystem.Data.Entities.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("DochubSystem.Data.Entities.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("DochubSystem.Data.Entities.User", "User")
                         .WithMany("Notifications")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Appointment");
+
+                    b.Navigation("Doctor");
+
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DochubSystem.Data.Entities.PaymentTransaction", b =>
+            modelBuilder.Entity("DochubSystem.Data.Entities.NotificationHistory", b =>
                 {
-                    b.HasOne("DochubSystem.Data.Entities.UserSubscription", "UserSubscription")
-                        .WithMany("Transactions")
-                        .HasForeignKey("SubscriptionId");
+                    b.HasOne("DochubSystem.Data.Entities.NotificationTemplate", "NotificationTemplate")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("DochubSystem.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("NotificationTemplate");
 
-                    b.Navigation("UserSubscription");
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DochubSystem.Data.Entities.NotificationQueue", b =>
+                {
+                    b.HasOne("DochubSystem.Data.Entities.NotificationTemplate", "NotificationTemplate")
+                        .WithMany("NotificationQueues")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("DochubSystem.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("NotificationTemplate");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DochubSystem.Data.Entities.Session", b =>
@@ -998,6 +1236,11 @@ namespace DochubSystem.Data.Migrations
                     b.Navigation("Appointments");
                 });
 
+            modelBuilder.Entity("DochubSystem.Data.Entities.NotificationTemplate", b =>
+                {
+                    b.Navigation("NotificationQueues");
+                });
+
             modelBuilder.Entity("DochubSystem.Data.Entities.SubscriptionPlan", b =>
                 {
                     b.Navigation("UserSubscriptions");
@@ -1012,11 +1255,6 @@ namespace DochubSystem.Data.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("Sessions");
-                });
-
-            modelBuilder.Entity("DochubSystem.Data.Entities.UserSubscription", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("DochubSystem.Data.Entities.Wallet", b =>
