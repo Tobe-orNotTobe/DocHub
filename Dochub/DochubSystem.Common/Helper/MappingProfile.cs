@@ -121,8 +121,7 @@ namespace DochubSystem.Common.Helper
 				.ForMember(dest => dest.UpdatedAt, opt => opt.Ignore())
 				.ForMember(dest => dest.ConsultationsUsed, opt => opt.Ignore())
 				.ForMember(dest => dest.User, opt => opt.Ignore())
-				.ForMember(dest => dest.SubscriptionPlan, opt => opt.Ignore())
-				.ForMember(dest => dest.Transactions, opt => opt.Ignore());
+				.ForMember(dest => dest.SubscriptionPlan, opt => opt.Ignore());
 
 			// Consultation Usage Mappings
 			CreateMap<ConsultationUsage, ConsultationUsageDetailDTO>()

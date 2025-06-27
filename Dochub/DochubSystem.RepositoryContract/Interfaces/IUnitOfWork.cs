@@ -17,7 +17,6 @@ namespace DochubSystem.RepositoryContract.Interfaces
 		ISubscriptionPlanRepository SubscriptionPlans { get; }
 		IUserSubscriptionRepository UserSubscriptions { get; }
 		IConsultationUsageRepository ConsultationUsages { get; }
-		IPaymentTransactionRepository PaymentTransactions { get; }
 		INotificationRepository Notifications { get; }
 		INotificationTemplateRepository NotificationTemplates { get; }
 		INotificationQueueRepository NotificationQueues { get; }

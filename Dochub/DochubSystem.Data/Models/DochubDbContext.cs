@@ -21,7 +21,6 @@ namespace DochubSystem.Data.Models
 		public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
 		public DbSet<UserSubscription> UserSubscriptions { get; set; }
 		public DbSet<ConsultationUsage> ConsultationUsages { get; set; }
-		public DbSet<PaymentTransaction> PaymentTransactions { get; set; }
 		public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
 		public DbSet<NotificationQueue> NotificationQueues { get; set; }
 		public DbSet<NotificationHistory> NotificationHistories { get; set; }
@@ -272,26 +271,6 @@ namespace DochubSystem.Data.Models
 			modelBuilder.Entity<ConsultationUsage>()
 				.HasIndex(cu => cu.SubscriptionId)
 				.HasDatabaseName("IX_ConsultationUsage_SubscriptionId");
-
-			modelBuilder.Entity<PaymentTransaction>(entity =>
-			{
-				entity.HasKey(pt => pt.PaymentTransactionId);
-
-				// User relationship
-				entity.HasOne(pt => pt.User)
-					.WithMany()
-					.HasForeignKey(pt => pt.UserId)
-					.OnDelete(DeleteBehavior.Restrict);
-
-				// SubscriptionId as just a foreign key field (no navigation property)
-				entity.Property(pt => pt.SubscriptionId)
-					.IsRequired(false);
-
-				// Indexes
-				entity.HasIndex(pt => pt.TransactionRef).IsUnique();
-				entity.HasIndex(pt => pt.SubscriptionId);
-				entity.HasIndex(pt => pt.UserId);
-			});
 		}
 	}
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DochubSystem.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Migrations : Migration
+    public partial class _1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -382,46 +382,6 @@ namespace DochubSystem.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PaymentTransactions",
-                columns: table => new
-                {
-                    PaymentTransactionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TransactionRef = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    SubscriptionId = table.Column<int>(type: "int", nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TransactionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentGatewayTransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PaymentGatewayResponse = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ProcessedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ExpiredAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserAgent = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OrderInfo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BillingCycle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PaymentTransactions", x => x.PaymentTransactionId);
-                    table.ForeignKey(
-                        name: "FK_PaymentTransactions_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_PaymentTransactions_UserSubscriptions_SubscriptionId",
-                        column: x => x.SubscriptionId,
-                        principalTable: "UserSubscriptions",
-                        principalColumn: "SubscriptionId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Chats",
                 columns: table => new
                 {
@@ -714,22 +674,6 @@ namespace DochubSystem.Data.Migrations
                 column: "Type");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentTransactions_SubscriptionId",
-                table: "PaymentTransactions",
-                column: "SubscriptionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PaymentTransactions_TransactionRef",
-                table: "PaymentTransactions",
-                column: "TransactionRef",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PaymentTransactions_UserId",
-                table: "PaymentTransactions",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Sessions_UserId",
                 table: "Sessions",
                 column: "UserId");
@@ -801,9 +745,6 @@ namespace DochubSystem.Data.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "PaymentTransactions");
-
-            migrationBuilder.DropTable(
                 name: "Sessions");
 
             migrationBuilder.DropTable(
@@ -813,22 +754,22 @@ namespace DochubSystem.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "UserSubscriptions");
+
+            migrationBuilder.DropTable(
                 name: "NotificationTemplates");
 
             migrationBuilder.DropTable(
                 name: "Appointments");
 
             migrationBuilder.DropTable(
-                name: "UserSubscriptions");
-
-            migrationBuilder.DropTable(
                 name: "Wallets");
 
             migrationBuilder.DropTable(
-                name: "Doctors");
+                name: "SubscriptionPlans");
 
             migrationBuilder.DropTable(
-                name: "SubscriptionPlans");
+                name: "Doctors");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

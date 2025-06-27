@@ -26,7 +26,6 @@ namespace DochubSystem.Service
 			services.AddTransient<IEmailService, EmailService>();
 			services.AddTransient<IDoctorService, DoctorService>();
 			services.AddTransient<IAppointmentService, AppointmentService>();
-			services.AddTransient<IPaymentService, PaymentService>();
 			services.AddTransient<ISubscriptionService, SubscriptionService>();
 			services.AddScoped<INotificationService, NotificationService>();
 			services.AddScoped<INotificationTemplateService, NotificationTemplateService>();

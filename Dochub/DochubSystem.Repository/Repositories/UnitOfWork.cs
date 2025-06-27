@@ -21,7 +21,6 @@ namespace DochubSystem.Repository.Repositories
 		public ISubscriptionPlanRepository SubscriptionPlans { get; }
 		public IUserSubscriptionRepository UserSubscriptions { get; }
 		public IConsultationUsageRepository ConsultationUsages { get; }
-		public IPaymentTransactionRepository PaymentTransactions { get; }
 		public INotificationRepository Notifications { get; }
 		public INotificationTemplateRepository NotificationTemplates { get; }
 		public INotificationQueueRepository NotificationQueues { get; }
@@ -37,7 +36,6 @@ namespace DochubSystem.Repository.Repositories
 						 ISubscriptionPlanRepository subscriptionPlanRepository,
 			   IUserSubscriptionRepository userSubscriptionRepository,
 				IConsultationUsageRepository consultationUsageRepository,
-				IPaymentTransactionRepository paymentTransactionRepository,
 				 INotificationRepository notificationRepository,
 						 INotificationTemplateRepository notificationTemplateRepository,
 						 INotificationQueueRepository notificationQueueRepository,
@@ -52,7 +50,6 @@ namespace DochubSystem.Repository.Repositories
 			SubscriptionPlans = subscriptionPlanRepository;
 			UserSubscriptions = userSubscriptionRepository;
 			ConsultationUsages = consultationUsageRepository;
-			PaymentTransactions = paymentTransactionRepository;
 			Notifications = notificationRepository;
 			NotificationTemplates = notificationTemplateRepository;
 			NotificationQueues = notificationQueueRepository;

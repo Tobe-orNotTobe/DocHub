@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DochubSystem.Data.Migrations
 {
     [DbContext(typeof(DochubDbContext))]
-    [Migration("20250626083502_Migrations")]
-    partial class Migrations
+    [Migration("20250627033926_1")]
+    partial class _1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -521,85 +521,6 @@ namespace DochubSystem.Data.Migrations
                         .HasDatabaseName("IX_NotificationTemplate_Type");
 
                     b.ToTable("NotificationTemplates");
-                });
-
-            modelBuilder.Entity("DochubSystem.Data.Entities.PaymentTransaction", b =>
-                {
-                    b.Property<int>("PaymentTransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PaymentTransactionId"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("BillingCycle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Currency")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ExpiredAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("IpAddress")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OrderInfo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentGatewayResponse")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentGatewayTransactionId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ProcessedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("SubscriptionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TransactionRef")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("TransactionType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserAgent")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("PaymentTransactionId");
-
-                    b.HasIndex("SubscriptionId");
-
-                    b.HasIndex("TransactionRef")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PaymentTransactions");
                 });
 
             modelBuilder.Entity("DochubSystem.Data.Entities.Session", b =>
@@ -1193,23 +1114,6 @@ namespace DochubSystem.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DochubSystem.Data.Entities.PaymentTransaction", b =>
-                {
-                    b.HasOne("DochubSystem.Data.Entities.UserSubscription", "UserSubscription")
-                        .WithMany("Transactions")
-                        .HasForeignKey("SubscriptionId");
-
-                    b.HasOne("DochubSystem.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("UserSubscription");
-                });
-
             modelBuilder.Entity("DochubSystem.Data.Entities.Session", b =>
                 {
                     b.HasOne("DochubSystem.Data.Entities.User", "User")
@@ -1351,11 +1255,6 @@ namespace DochubSystem.Data.Migrations
                     b.Navigation("Notifications");
 
                     b.Navigation("Sessions");
-                });
-
-            modelBuilder.Entity("DochubSystem.Data.Entities.UserSubscription", b =>
-                {
-                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("DochubSystem.Data.Entities.Wallet", b =>
