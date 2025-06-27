@@ -1,4 +1,5 @@
 ﻿using DochubSystem.Data.Entities;
+using DocHubSystem.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -25,8 +26,10 @@ namespace DochubSystem.Data.Models
 		public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
 		public DbSet<NotificationQueue> NotificationQueues { get; set; }
 		public DbSet<NotificationHistory> NotificationHistories { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
@@ -292,6 +295,13 @@ namespace DochubSystem.Data.Models
 				entity.HasIndex(pt => pt.SubscriptionId);
 				entity.HasIndex(pt => pt.UserId);
 			});
-		}
+
+            // Feedback
+            modelBuilder.Entity<Feedback>()
+        .HasOne(f => f.Doctor)
+        .WithMany(d => d.Feedbacks)
+        .HasForeignKey(f => f.DoctorId)
+        .OnDelete(DeleteBehavior.Cascade);
+        }
 	}
 }

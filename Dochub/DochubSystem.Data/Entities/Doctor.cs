@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DocHubSystem.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -25,5 +26,6 @@ namespace DochubSystem.Data.Entities
 
         public User User { get; set; }
         public ICollection<Appointment> Appointments { get; set; }
+        public virtual ICollection<Feedback> Feedbacks { get; set; }
     }
 }

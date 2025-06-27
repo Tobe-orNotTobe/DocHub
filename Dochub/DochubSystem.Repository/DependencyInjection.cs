@@ -1,5 +1,6 @@
 ﻿using DochubSystem.Repository.Repositories;
 using DochubSystem.RepositoryContract.Interfaces;
+using DocHubSystem.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,6 +28,7 @@ namespace DochubSystem.Repository
 			services.AddTransient<INotificationQueueRepository, NotificationQueueRepository>();
 			services.AddTransient<INotificationHistoryRepository, NotificationHistoryRepository>();
             services.AddScoped<IChatRepository, ChatRepository>();
+			services.AddTransient<IFeedbackRepository, FeedbackRepository>();
 
 
             //DI Unit of Work
