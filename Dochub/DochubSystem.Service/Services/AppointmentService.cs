@@ -94,8 +94,8 @@ namespace DochubSystem.Service.Services
 		{
 			var appointment = await _unitOfWork.Appointments.GetAsync(
 				a => a.AppointmentId == appointmentId,
-				includeProperties: "User,Doctor.User"
-			);
+			    includeProperties: "Doctor,Doctor.User,User"
+            );
 
 			if (appointment == null)
 				return null;
