@@ -24,6 +24,8 @@ namespace DochubSystem.Data.Models
 		public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
 		public DbSet<NotificationQueue> NotificationQueues { get; set; }
 		public DbSet<NotificationHistory> NotificationHistories { get; set; }
+		public DbSet<PaymentRequest> PaymentRequests { get; set; }
+		public DbSet<TransactionRecord> TransactionRecords { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -271,6 +273,93 @@ namespace DochubSystem.Data.Models
 			modelBuilder.Entity<ConsultationUsage>()
 				.HasIndex(cu => cu.SubscriptionId)
 				.HasDatabaseName("IX_ConsultationUsage_SubscriptionId");
+
+			// PaymentRequest configuration
+			modelBuilder.Entity<PaymentRequest>()
+				.HasOne(pr => pr.User)
+				.WithMany()
+				.HasForeignKey(pr => pr.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<PaymentRequest>()
+				.HasOne(pr => pr.Plan)
+				.WithMany()
+				.HasForeignKey(pr => pr.PlanId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			// No foreign key for ConfirmedByAdmin - just store as string
+
+			modelBuilder.Entity<PaymentRequest>()
+				.Property(pr => pr.Amount)
+				.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<PaymentRequest>()
+				.HasIndex(pr => pr.TransferCode)
+				.IsUnique()
+				.HasDatabaseName("IX_PaymentRequest_TransferCode");
+
+			modelBuilder.Entity<PaymentRequest>()
+				.HasIndex(pr => pr.Status)
+				.HasDatabaseName("IX_PaymentRequest_Status");
+
+			modelBuilder.Entity<PaymentRequest>()
+				.HasIndex(pr => pr.CreatedAt)
+				.HasDatabaseName("IX_PaymentRequest_CreatedAt");
+
+			modelBuilder.Entity<PaymentRequest>()
+				.HasIndex(pr => pr.ExpiresAt)
+				.HasDatabaseName("IX_PaymentRequest_ExpiresAt");
+
+			modelBuilder.Entity<PaymentRequest>()
+				.HasIndex(pr => pr.UserId)
+				.HasDatabaseName("IX_PaymentRequest_UserId");
+
+			// TransactionRecord configuration
+			modelBuilder.Entity<TransactionRecord>()
+				.HasOne(tr => tr.User)
+				.WithMany()
+				.HasForeignKey(tr => tr.UserId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<TransactionRecord>()
+				.HasOne(tr => tr.PaymentRequest)
+				.WithMany()
+				.HasForeignKey(tr => tr.PaymentRequestId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<TransactionRecord>()
+				.HasOne(tr => tr.Plan)
+				.WithMany()
+				.HasForeignKey(tr => tr.PlanId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			modelBuilder.Entity<TransactionRecord>()
+				.HasOne(tr => tr.Subscription)
+				.WithMany()
+				.HasForeignKey(tr => tr.SubscriptionId)
+				.OnDelete(DeleteBehavior.Restrict);
+
+			// No foreign key for ProcessedByAdmin - just store as string
+
+			modelBuilder.Entity<TransactionRecord>()
+				.Property(tr => tr.Amount)
+				.HasColumnType("decimal(18,2)");
+
+			modelBuilder.Entity<TransactionRecord>()
+				.HasIndex(tr => tr.TransferCode)
+				.HasDatabaseName("IX_TransactionRecord_TransferCode");
+
+			modelBuilder.Entity<TransactionRecord>()
+				.HasIndex(tr => tr.TransactionDate)
+				.HasDatabaseName("IX_TransactionRecord_TransactionDate");
+
+			modelBuilder.Entity<TransactionRecord>()
+				.HasIndex(tr => tr.UserId)
+				.HasDatabaseName("IX_TransactionRecord_UserId");
+
+			modelBuilder.Entity<TransactionRecord>()
+				.HasIndex(tr => tr.Status)
+				.HasDatabaseName("IX_TransactionRecord_Status");
 		}
 	}
 }

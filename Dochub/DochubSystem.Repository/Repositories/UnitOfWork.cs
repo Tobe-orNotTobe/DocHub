@@ -25,9 +25,11 @@ namespace DochubSystem.Repository.Repositories
 		public INotificationTemplateRepository NotificationTemplates { get; }
 		public INotificationQueueRepository NotificationQueues { get; }
 		public INotificationHistoryRepository NotificationHistories { get; }
-        public IChatRepository Chats { get; }
+		public IChatRepository Chats { get; }
+		public IPaymentRequestRepository PaymentRequests { get; }
+		public ITransactionRecordRepository TransactionRecords { get; }
 
-        public UnitOfWork(DochubDbContext context,
+		public UnitOfWork(DochubDbContext context,
 					   IUserRepository userRepository,
 						IDoctorRepository doctorRepository,
 					   IAppointmentRepository appointmentRepository,
@@ -39,7 +41,9 @@ namespace DochubSystem.Repository.Repositories
 				 INotificationRepository notificationRepository,
 						 INotificationTemplateRepository notificationTemplateRepository,
 						 INotificationQueueRepository notificationQueueRepository,
-						 INotificationHistoryRepository notificationHistoryRepository, IChatRepository chatRepository)
+						 INotificationHistoryRepository notificationHistoryRepository, IChatRepository chatRepository, 
+						 IPaymentRequestRepository paymentRequestRepository,
+							 ITransactionRecordRepository transactionRecordRepository)
 		{
 			_context = context;
 			Users = userRepository;
@@ -54,12 +58,13 @@ namespace DochubSystem.Repository.Repositories
 			NotificationTemplates = notificationTemplateRepository;
 			NotificationQueues = notificationQueueRepository;
 			NotificationHistories = notificationHistoryRepository;
-            Chats = chatRepository;
+			Chats = chatRepository;
+			PaymentRequests = paymentRequestRepository;
+			TransactionRecords = transactionRecordRepository;
+		}
 
-        }
 
-
-        public async Task<int> CompleteAsync()
+		public async Task<int> CompleteAsync()
 		{
 			return await _context.SaveChangesAsync();
 		}

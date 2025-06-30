@@ -314,5 +314,161 @@ namespace DochubSystem.API.Controllers
 				return StatusCode(500, _response);
 			}
 		}
+
+		/// <summary>
+		/// Create VietQR payment request for subscription
+		/// </summary>
+		[HttpPost("payment/vietqr/create")]
+		public async Task<IActionResult> CreateVietQRPayment([FromBody] CreateVietQRPaymentRequestDTO request)
+		{
+			try
+			{
+				var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(userId))
+				{
+					_response.StatusCode = HttpStatusCode.Unauthorized;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("User not authenticated");
+					return Unauthorized(_response);
+				}
+
+				if (!ModelState.IsValid)
+				{
+					_response.StatusCode = HttpStatusCode.BadRequest;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.AddRange(ModelState.Values
+						.SelectMany(v => v.Errors)
+						.Select(e => e.ErrorMessage));
+					return BadRequest(_response);
+				}
+
+				// Validate billing cycle
+				if (request.BillingCycle != "Monthly" && request.BillingCycle != "Yearly")
+				{
+					_response.StatusCode = HttpStatusCode.BadRequest;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("Invalid billing cycle. Must be 'Monthly' or 'Yearly'");
+					return BadRequest(_response);
+				}
+
+				var vietQRPaymentService = HttpContext.RequestServices.GetRequiredService<IVietQRPaymentService>();
+				var result = await vietQRPaymentService.CreatePaymentRequestAsync(userId, request);
+
+				_response.StatusCode = HttpStatusCode.Created;
+				_response.IsSuccess = true;
+				_response.Result = result;
+				return Ok(_response);
+			}
+			catch (ArgumentException ex)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(ex.Message);
+				return BadRequest(_response);
+			}
+			catch (InvalidOperationException ex)
+			{
+				_response.StatusCode = HttpStatusCode.Conflict;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(ex.Message);
+				return Conflict(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.InternalServerError;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add($"Error: {ex.Message}");
+				return StatusCode(500, _response);
+			}
+		}
+
+		/// <summary>
+		/// Get VietQR payment request status
+		/// </summary>
+		[HttpGet("payment/vietqr/status/{paymentRequestId}")]
+		public async Task<IActionResult> GetVietQRPaymentStatus(int paymentRequestId)
+		{
+			try
+			{
+				var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(userId))
+				{
+					_response.StatusCode = HttpStatusCode.Unauthorized;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("User not authenticated");
+					return Unauthorized(_response);
+				}
+
+				var vietQRPaymentService = HttpContext.RequestServices.GetRequiredService<IVietQRPaymentService>();
+				var result = await vietQRPaymentService.GetPaymentRequestAsync(paymentRequestId);
+
+				// Check if the payment request belongs to the current user
+				if (result.UserId != userId)
+				{
+					_response.StatusCode = HttpStatusCode.Forbidden;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("Access denied");
+					return Forbid();
+				}
+
+				_response.StatusCode = HttpStatusCode.OK;
+				_response.IsSuccess = true;
+				_response.Result = result;
+				return Ok(_response);
+			}
+			catch (ArgumentException ex)
+			{
+				_response.StatusCode = HttpStatusCode.NotFound;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(ex.Message);
+				return NotFound(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.InternalServerError;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add($"Error: {ex.Message}");
+				return StatusCode(500, _response);
+			}
+		}
+
+		/// <summary>
+		/// Get user's VietQR payment history
+		/// </summary>
+		[HttpGet("payment/vietqr/history")]
+		public async Task<IActionResult> GetVietQRPaymentHistory()
+		{
+			try
+			{
+				var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(userId))
+				{
+					_response.StatusCode = HttpStatusCode.Unauthorized;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("User not authenticated");
+					return Unauthorized(_response);
+				}
+
+				var vietQRPaymentService = HttpContext.RequestServices.GetRequiredService<IVietQRPaymentService>();
+				var paymentRequests = await vietQRPaymentService.GetUserPaymentRequestsAsync(userId);
+				var transactions = await vietQRPaymentService.GetUserTransactionHistoryAsync(userId);
+
+				_response.StatusCode = HttpStatusCode.OK;
+				_response.IsSuccess = true;
+				_response.Result = new
+				{
+					PaymentRequests = paymentRequests,
+					Transactions = transactions
+				};
+				return Ok(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.InternalServerError;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add($"Error: {ex.Message}");
+				return StatusCode(500, _response);
+			}
+		}
 	}
 }

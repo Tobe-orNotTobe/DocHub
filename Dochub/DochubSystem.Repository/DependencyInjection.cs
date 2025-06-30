@@ -26,10 +26,12 @@ namespace DochubSystem.Repository
 			services.AddTransient<INotificationQueueRepository, NotificationQueueRepository>();
 			services.AddTransient<INotificationHistoryRepository, NotificationHistoryRepository>();
             services.AddScoped<IChatRepository, ChatRepository>();
+			services.AddScoped<IPaymentRequestRepository, PaymentRequestRepository>();
+			services.AddScoped<ITransactionRecordRepository, TransactionRecordRepository>();
 
 
-            //DI Unit of Work
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+			//DI Unit of Work
+			services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             return services;
         }

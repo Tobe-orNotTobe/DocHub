@@ -28,14 +28,19 @@ namespace DochubSystem.Service
 			services.AddTransient<IAppointmentService, AppointmentService>();
 			services.AddTransient<ISubscriptionService, SubscriptionService>();
 			services.AddScoped<INotificationService, NotificationService>();
+			services.AddScoped<INotificationTemplateService, NotificationTemplateService>(); 
+			services.AddScoped<IChatService, ChatService>();
 			services.AddScoped<INotificationTemplateService, NotificationTemplateService>();
+			services.AddScoped<IVietQRPaymentService, VietQRPaymentService>();
+			services.AddHttpClient<IVietQRPaymentService, VietQRPaymentService>();
+
 			services.AddHostedService<StartupInitializationService>();
 			services.AddHostedService<NotificationBackgroundService>();
 			services.AddHostedService<HighPriorityNotificationService>();
 			services.AddHostedService<AppointmentReminderService>();
-            services.AddScoped<IChatService, ChatService>();
+			services.AddHostedService<VietQRCleanupService>();
 
-            return services;
+			return services;
         }
     }
 }

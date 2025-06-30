@@ -241,5 +241,124 @@ namespace DochubSystem.API.Controllers
 			_response.Result = result.Message;
 			return Ok(_response);
 		}
+
+		/// <summary>
+		/// Search VietQR payment requests (Admin only)
+		/// </summary>
+		[HttpGet("vietqr/payment-requests")]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> SearchVietQRPaymentRequests([FromQuery] PaymentRequestSearchDTO searchDto)
+		{
+			try
+			{
+				var vietQRPaymentService = HttpContext.RequestServices.GetRequiredService<IVietQRPaymentService>();
+				var result = await vietQRPaymentService.SearchPaymentRequestsAsync(searchDto);
+
+				_response.StatusCode = HttpStatusCode.OK;
+				_response.IsSuccess = true;
+				_response.Result = result;
+				return Ok(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.InternalServerError;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add($"Error: {ex.Message}");
+				return StatusCode(500, _response);
+			}
+		}
+
+		/// <summary>
+		/// Confirm VietQR payment (Admin only)
+		/// </summary>
+		[HttpPost("vietqr/confirm-payment/{paymentRequestId}")]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> ConfirmVietQRPayment(int paymentRequestId, [FromBody] ConfirmPaymentRequestDTO confirmDto)
+		{
+			try
+			{
+				var adminId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+				if (string.IsNullOrEmpty(adminId))
+				{
+					_response.StatusCode = HttpStatusCode.Unauthorized;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("Admin not authenticated");
+					return Unauthorized(_response);
+				}
+
+				if (!ModelState.IsValid)
+				{
+					_response.StatusCode = HttpStatusCode.BadRequest;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.AddRange(ModelState.Values
+						.SelectMany(v => v.Errors)
+						.Select(e => e.ErrorMessage));
+					return BadRequest(_response);
+				}
+
+				var vietQRPaymentService = HttpContext.RequestServices.GetRequiredService<IVietQRPaymentService>();
+				var result = await vietQRPaymentService.ConfirmPaymentAsync(paymentRequestId, adminId, confirmDto);
+
+				_response.StatusCode = HttpStatusCode.OK;
+				_response.IsSuccess = true;
+				_response.Result = new { Success = result, Message = "Payment confirmed successfully" };
+				return Ok(_response);
+			}
+			catch (ArgumentException ex)
+			{
+				_response.StatusCode = HttpStatusCode.NotFound;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(ex.Message);
+				return NotFound(_response);
+			}
+			catch (InvalidOperationException ex)
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(ex.Message);
+				return BadRequest(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.InternalServerError;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add($"Error: {ex.Message}");
+				return StatusCode(500, _response);
+			}
+		}
+
+		/// <summary>
+		/// Get VietQR transaction details (Admin only)
+		/// </summary>
+		[HttpGet("vietqr/transaction/{transactionId}")]
+		[Authorize(Roles = "Admin")]
+		public async Task<IActionResult> GetVietQRTransaction(int transactionId)
+		{
+			try
+			{
+				var vietQRPaymentService = HttpContext.RequestServices.GetRequiredService<IVietQRPaymentService>();
+				var result = await vietQRPaymentService.GetTransactionRecordAsync(transactionId);
+
+				_response.StatusCode = HttpStatusCode.OK;
+				_response.IsSuccess = true;
+				_response.Result = result;
+				return Ok(_response);
+			}
+			catch (ArgumentException ex)
+			{
+				_response.StatusCode = HttpStatusCode.NotFound;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(ex.Message);
+				return NotFound(_response);
+			}
+			catch (Exception ex)
+			{
+				_response.StatusCode = HttpStatusCode.InternalServerError;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add($"Error: {ex.Message}");
+				return StatusCode(500, _response);
+			}
+		}
+
 	}
 }

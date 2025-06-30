@@ -186,6 +186,42 @@ namespace DochubSystem.Common.Helper
             CreateMap<Chat, ChatDTO>();
             CreateMap<CreateChatWithUserDTO, Chat>();
 
-        }
-    }
+			// PaymentRequest mappings
+			CreateMap<PaymentRequest, PaymentRequestDTO>()
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+				.ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User.Email))
+				.ForMember(dest => dest.PlanName, opt => opt.MapFrom(src => src.Plan.Name))
+				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src => new BankAccountInfo
+				{
+					AccountNo = src.AccountNo,
+					AccountName = src.AccountName,
+					BankCode = src.BankCode,
+					BankName = GetBankName(src.BankCode)
+				}));
+
+			// TransactionRecord mappings
+			CreateMap<TransactionRecord, TransactionRecordDTO>()
+				.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+				.ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User.Email))
+				.ForMember(dest => dest.PlanName, opt => opt.MapFrom(src => src.Plan.Name))
+				.ForMember(dest => dest.ProcessedByAdminName, opt => opt.MapFrom(src => src.ProcessedByAdmin))
+				.ForMember(dest => dest.BankAccount, opt => opt.MapFrom(src => new BankAccountInfo
+				{
+					AccountNo = src.AccountNo,
+					AccountName = src.AccountName,
+					BankCode = src.BankCode,
+					BankName = GetBankName(src.BankCode)
+				}));
+		}
+
+		private string GetBankName(string bankCode)
+		{
+			var bankNames = new Dictionary<string, string>
+	{
+		{ "970423", "Tien Phong Bank (TPBank)" }
+	};
+
+			return bankNames.TryGetValue(bankCode, out var bankName) ? bankName : "Unknown Bank";
+		}
+	}
 }

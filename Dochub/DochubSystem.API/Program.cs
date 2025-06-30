@@ -21,6 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.Configure<VietQRSettings>(builder.Configuration.GetSection("QRPaymentSettings"));
 
 builder.Services.AddSwaggerGen(options =>
 {
