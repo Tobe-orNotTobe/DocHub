@@ -3,6 +3,7 @@ using DochubSystem.Repository;
 using DochubSystem.Service.BackgroundServices;
 using DochubSystem.Service.Services;
 using DochubSystem.ServiceContract.Interfaces;
+using DochubSystem.Services;
 using MailKit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +40,8 @@ namespace DochubSystem.Service
 			services.AddHostedService<HighPriorityNotificationService>();
 			services.AddHostedService<AppointmentReminderService>();
 			services.AddHostedService<VietQRCleanupService>();
+            services.AddScoped<IChatService, ChatService>();
+            services.AddTransient<IFeedbackService, FeedbackService>();
 
 			return services;
         }

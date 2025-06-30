@@ -1,5 +1,6 @@
 ﻿using DochubSystem.Repository.Repositories;
 using DochubSystem.RepositoryContract.Interfaces;
+using DocHubSystem.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -28,6 +29,7 @@ namespace DochubSystem.Repository
             services.AddScoped<IChatRepository, ChatRepository>();
 			services.AddScoped<IPaymentRequestRepository, PaymentRequestRepository>();
 			services.AddScoped<ITransactionRecordRepository, TransactionRecordRepository>();
+			services.AddTransient<IFeedbackRepository, FeedbackRepository>();
 
 
 			//DI Unit of Work

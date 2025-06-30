@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DochubSystem.Data.DTOs;
 using DochubSystem.Data.Entities;
+using DocHubSystem.Data.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -185,6 +186,11 @@ namespace DochubSystem.Common.Helper
             //Chat
             CreateMap<Chat, ChatDTO>();
             CreateMap<CreateChatWithUserDTO, Chat>();
+
+            CreateMap<Feedback, FeedbackDTO>()
+               .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.Date.ToString("yyyy-MM-dd")));
+
+            CreateMap<Feedback, FeedbackDTO>().ReverseMap();
 
 			// PaymentRequest mappings
 			CreateMap<PaymentRequest, PaymentRequestDTO>()

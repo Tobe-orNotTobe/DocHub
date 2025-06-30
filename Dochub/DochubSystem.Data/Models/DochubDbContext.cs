@@ -1,4 +1,5 @@
 ﻿using DochubSystem.Data.Entities;
+using DocHubSystem.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -26,8 +27,10 @@ namespace DochubSystem.Data.Models
 		public DbSet<NotificationHistory> NotificationHistories { get; set; }
 		public DbSet<PaymentRequest> PaymentRequests { get; set; }
 		public DbSet<TransactionRecord> TransactionRecords { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
 
